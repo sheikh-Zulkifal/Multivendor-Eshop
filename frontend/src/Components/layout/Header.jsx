@@ -2,14 +2,21 @@ import React, { useState } from "react";
 import styles from "../../styles/styles";
 import { Link } from "react-router-dom";
 import { categoriesData, productData } from "../../static/data";
-import { AiOutlineHeart, AiOutlineSearch, AiOutlineShoppingCart } from "react-icons/ai";
+import {
+  AiOutlineHeart,
+  AiOutlineSearch,
+  AiOutlineShoppingCart,
+} from "react-icons/ai";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import DropDown from "./DropDown.jsx";
 import Navbar from "./Navbar.jsx";
+import { useSelector } from "react-redux";
+import { backend_url } from "../../server.js";
 
 const Header = ({ activeHeading }) => {
+  const { isAuthenticated, user , loading} = useSelector((state) => state.user);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
   const [active, setActive] = useState(false);
@@ -34,7 +41,8 @@ const Header = ({ activeHeading }) => {
   });
 
   return (
-    <>
+  
+     <>
       <div className={`${styles.section}`}>
         <div className="  hidden 800px:h-[50px]  800px:my-[20px] md:flex items-center justify-between ">
           <div>
@@ -101,7 +109,7 @@ const Header = ({ activeHeading }) => {
           className={`${styles.section} relative ${styles.noramlFlex} justify-between`}
         >
           {/* categories */}
-          <div onClick={()=>setDropDown(!dropDown)}>
+          <div onClick={() => setDropDown(!dropDown)}>
             <div className="relative h-[60px] mt-[10px] w-[270px] hidden  lg:block">
               <BiMenuAltLeft size={30} className="absolute top-3 left-2 " />
               <button
@@ -134,7 +142,7 @@ const Header = ({ activeHeading }) => {
               >
                 <AiOutlineHeart size={30} color="rgb(255 255 255 / 83%)" />
                 <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
-                 0   {/* {wishlist && wishlist.length} */}
+                  0 {/* {wishlist && wishlist.length} */}
                 </span>
               </div>
             </div>
@@ -143,9 +151,12 @@ const Header = ({ activeHeading }) => {
                 className="relative cursor-pointer mr-[15px]"
                 // onClick={() => setOpenWishlist(true)}
               >
-                <AiOutlineShoppingCart size={30} color="rgb(255 255 255 / 83%)" />
+                <AiOutlineShoppingCart
+                  size={30}
+                  color="rgb(255 255 255 / 83%)"
+                />
                 <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
-                 0   {/* {wishlist && wishlist.length} */}
+                  0 {/* {wishlist && wishlist.length} */}
                 </span>
               </div>
             </div>
@@ -154,17 +165,23 @@ const Header = ({ activeHeading }) => {
                 className="relative cursor-pointer mr-[15px]"
                 // onClick={() => setOpenWishlist(true)}
               >
-                <Link to = "/login">
-                <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
-                </Link>
-                
+                {isAuthenticated ? (
+                  <Link to="/profile">
+                    <img src={`${backend_url}${user.avatar}`} alt="" 
+                    className="w-[35px] h-[35px] rounded-full "/>
+                  </Link>
+                ) : (
+                  <Link to="/login">
+                    <CgProfile size={30} color="rgb(255 255 255 / 83%)" />
+                  </Link>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
     </>
-  );
-};
+   )}
+   
 
 export default Header;
