@@ -14,6 +14,7 @@ import DropDown from "./DropDown.jsx";
 import Navbar from "./Navbar.jsx";
 import { useSelector } from "react-redux";
 import { backend_url } from "../../server.js";
+import getImageUrl from "../../utils/getImageUrl.js";
 
 const Header = ({ activeHeading }) => {
   const { isAuthenticated, user , loading} = useSelector((state) => state.user);
@@ -167,7 +168,7 @@ const Header = ({ activeHeading }) => {
               >
                 {isAuthenticated ? (
                   <Link to="/profile">
-                    <img src={user?.avatar?.url} alt="" 
+                    <img src={getImageUrl(user.avatar)} alt="" 
                     className="w-[35px] h-[35px] rounded-full "/>
                   </Link>
                 ) : (
