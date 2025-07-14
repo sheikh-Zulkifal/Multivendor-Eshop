@@ -97,7 +97,7 @@ const Header = ({ activeHeading }) => {
             ) : null}
           </div>
           <div className={`${styles.button}`}>
-            <Link to="/seller">
+            <Link to="/shop-create">
               <h1 className="text-[#fff] flex items-center">
                 Become Seller
                 <IoIosArrowForward className="ml-1" />
@@ -223,19 +223,17 @@ const Header = ({ activeHeading }) => {
           <div>
             <div
               className="relative mr-[20px]"
-               onClick={() => setOpenCart(true)}
+              onClick={() => setOpenCart(true)}
             >
               <AiOutlineShoppingCart size={30} />
               <span class="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
-               1
+                1
               </span>
             </div>
           </div>
           {/* cart popup */}
-         
 
           {/* wishlist popup */}
-       
         </div>
 
         {/* header sidebar */}
@@ -246,12 +244,12 @@ const Header = ({ activeHeading }) => {
             <div className="fixed w-[70%] bg-[#fff] h-screen top-0 left-0 z-10 overflow-y-scroll">
               <div className="w-full justify-between flex pr-3">
                 <div>
-                  <div
-                    className="relative mr-[15px]"
-
-                  >
+                  <div className="relative mr-[15px]">
                     <AiOutlineHeart size={30} className="mt-5 ml-3" />
-                    <span class="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center"> 0 </span>
+                    <span class="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
+                      {" "}
+                      0{" "}
+                    </span>
                   </div>
                 </div>
                 <RxCross1
@@ -290,8 +288,6 @@ const Header = ({ activeHeading }) => {
                     })}
                   </div>
                 )}
-
-                
               </div>
 
               <Navbar active={activeHeading} />
@@ -311,7 +307,7 @@ const Header = ({ activeHeading }) => {
                   <div>
                     <Link to="/profile">
                       <img
-                        src={`${user.avatar?.url}`}
+                        src={getImageUrl(user.avatar)   }
                         alt=""
                         className="w-[60px] h-[60px] rounded-full border-[3px] border-[#0eae88]"
                       />
