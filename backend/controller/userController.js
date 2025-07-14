@@ -14,7 +14,6 @@ const { isAuthenticated } = require("../middleware/auth");
 // Create User Route
 router.post("/create-user", upload.single("avatar"), async (req, res, next) => {
   const filename = req?.file?.filename;
-  console.log("Uploaded file:", filename);
 
   const { name, email, password } = req.body;
   const userEmail = await User.findOne({ email });
@@ -32,7 +31,7 @@ router.post("/create-user", upload.single("avatar"), async (req, res, next) => {
   }
 
   const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${filename}`;
-  console.log("Avatar URL:", fileUrl);
+
 
   const user = {
     name,

@@ -4,6 +4,8 @@ import { RxAvatar } from "react-icons/rx";
 import styles from "../../styles/styles";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { server } from "../../server";
 
 const ShopCreate = () => {
   const [email, setEmail] = useState("");
@@ -17,6 +19,15 @@ const ShopCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const config = { headers: { "Content-Type": "multipart/form-data" } };
+    const newForm = new FormData();
+    newForm.append("avatar", avatar);
+    newForm.append("name", name);
+    newForm.append("email", email);
+    newForm.append("password", password);
+    newForm.append("zipCode", zipCode);
+    newForm.append("address", address);
+    newForm.append("phoneNumber", phoneNumber);
 
     axios
       .post(`${server}/shop/create-shop`, {
@@ -39,20 +50,15 @@ const ShopCreate = () => {
         setPhoneNumber();
       })
       .catch((error) => {
-        toast   .error(error.response.data.message);
+        toast.error(error.response.data.message);
       });
   };
 
   const handleFileInputChange = (e) => {
-    const reader = new FileReader();
+    const file = e.target.files[0];
+    setAvatar(file);
+    
 
-    reader.onload = () => {
-      if (reader.readyState === 2) {
-        setAvatar(reader.result);
-      }
-    };
-
-    reader.readAsDataURL(e.target.files[0]);
   };
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -201,14 +207,14 @@ const ShopCreate = () => {
               <div className="mt-2 flex items-center">
                 <span className="inline-block h-8 w-8 rounded-full overflow-hidden">
                   {avatar ? (
-                    <img
-                      src={avatar}
-                      alt="avatar"
-                      className="h-full w-full object-cover rounded-full"
-                    />
-                  ) : (
-                    <RxAvatar className="h-8 w-8" />
-                  )}
+                                      <img
+                                        src={URL.createObjectURL(avatar)}
+                                        alt="avatar"
+                                        className="h-full w-full object-cover rounded-full"
+                                      />
+                                    ) : (
+                                      <RxAvatar className="h-8 w-8" />
+                                    )}
                 </span>
                 <label
                   htmlFor="file-input"
