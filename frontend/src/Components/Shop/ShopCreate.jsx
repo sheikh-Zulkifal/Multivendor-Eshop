@@ -16,6 +16,7 @@ const ShopCreate = () => {
   const [avatar, setAvatar] = useState();
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
