@@ -36,7 +36,9 @@ router.post("/create-shop", upload.single("avatar"), async (req, res, next) => {
       name: req.body.name,
       email: email,
       password: req.body.password,
-      avatar: fileUrl,
+      avatar: {
+      url: fileUrl,
+    },
       address: req.body.address,
       phoneNumber: req.body.phoneNumber,
       zipCode: req.body.zipCode,

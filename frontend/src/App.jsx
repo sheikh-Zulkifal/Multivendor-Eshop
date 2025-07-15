@@ -15,28 +15,25 @@ import {
   ProfilePage,
   ShopCreatePage,
   ShopLoginPage,
-} from "./Routes.js";
+} from "./routes/Routes.js";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import Store from "../redux/store.js";
 import { loadSeller, loadUser } from "../redux/actions/user.js";
-import { useSelector } from "react-redux";
-import ProtectedRoute from "./ProtectedRoute.jsx";
-import {ShopHomePage} from "./ShopRoutes.js";
-import SellerProtectedRoute from "./SellerProtectedRoute.jsx";
+import ProtectedRoute from "./routes/ProtectedRoute.jsx";
+import {ShopHomePage,} from "./ShopRoutes.js";
+import { ShopDashboardPage } from "./routes/ShopRoutes.js"
+import SellerProtectedRoute from "./routes/SellerProtectedRoute.jsx";
 
 function App() {
-  const { loading } = useSelector((state) => state.user);
-  const { isSeller, seller, isLoading } = useSelector((state) => state.seller);
   useEffect(() => {
     Store.dispatch(loadUser());
     Store.dispatch(loadSeller());
   }, []);
 
   return (
-    <>
-      {loading || isLoading ? null : (
+    
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -75,6 +72,11 @@ function App() {
                 <ShopHomePage />
               </SellerProtectedRoute>
             } />
+            <Route path="/dashboard" element={
+              <SellerProtectedRoute>
+                <ShopDashboardPage />
+              </SellerProtectedRoute>
+            } />
           </Routes>
           <ToastContainer
             position="bottom-center"
@@ -89,8 +91,7 @@ function App() {
             theme="dark"
           />
         </BrowserRouter>
-      )}
-    </>
+     
   );
 }
 

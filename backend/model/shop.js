@@ -34,7 +34,16 @@ const shopSchema = new mongoose.Schema({
     type: String,
     default: "seller",
   },
-  avatar: { type: String, required: true },
+  avatar:{
+    public_id: {
+      type: String,
+      // required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
+ },
   zipCode: {
     type: Number,
     required: [true, "Please enter your shop zip code!"],
