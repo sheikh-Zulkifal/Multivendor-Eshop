@@ -31,6 +31,7 @@ router.post("/create-shop", upload.single("avatar"), async (req, res, next) => {
       return next(new ErrorHandler("Seller already exists", 400));
     }
     const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${filename}`;
+    
 
     const seller = {
       name: req.body.name,
