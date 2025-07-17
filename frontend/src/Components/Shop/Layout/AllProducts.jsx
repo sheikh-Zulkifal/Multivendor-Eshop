@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import Loader from "../../layout/Loader";
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { getAllProductsShop } from "../../../../redux/actions/product";
+import { deleteProduct, getAllProductsShop } from "../../../../redux/actions/product";
 
 const AllProducts = () => {
   const { products, isLoading } = useSelector((state) => state.products);
@@ -19,12 +19,12 @@ const AllProducts = () => {
     dispatch(getAllProductsShop(seller._id));
   }, [dispatch]);
 
-//   const handleDelete = (id) => {
-//     dispatch(deleteProduct(id));
-//     window.location.reload();
-//   };
+  const handleDelete = (id) => {
+    dispatch(deleteProduct(id));
+    window.location.reload();
+  };
 
-// 2:40
+
 
   const columns = [
     { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },

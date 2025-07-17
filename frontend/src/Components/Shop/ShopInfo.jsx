@@ -3,10 +3,17 @@ import { useSelector } from "react-redux";
 import getImageUrl from "../../utils/getImageUrl";
 import styles from "../../styles/styles";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { server } from "../../server";
 
 const ShopInfo = ({ isOwner }) => {
   const { seller } = useSelector((state) => state.seller);
-  const logoutHandler = () => {};
+  const logoutHandler = async () => {
+    axios.get(`${server}/shop/logout`, {
+      withCredentials: true,
+    });
+    window.location.reload();
+  };
   return (
     <div>
       <div className="w-full py-5">
