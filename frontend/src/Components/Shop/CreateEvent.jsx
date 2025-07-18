@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { categoriesData } from "../../../static/data";
+import { categoriesData } from "../../static/data";
 import { toast } from "react-toastify";
-import { createEvent } from "../../../../redux/actions/event";
-
+import { createEvent } from "../../../redux/actions/event";
 const CreateEvent = () => {
   const { seller } = useSelector((state) => state.seller);
   const { success, error } = useSelector((state) => state.events);
@@ -24,20 +23,23 @@ const CreateEvent = () => {
   const [endDate, setEndDate] = useState(null);
 
   const handleStartDateChange = (e) => {
+    console.log(e.target.value);
     const startDate = new Date(e.target.value);
     const minEndDate = new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000);
     setStartDate(startDate);
+
     setEndDate(null);
-    document.getElementById("end-date").min = minEndDate.toISOString.slice(
-      0,
-      10
-    );
+    document.getElementById("end-date").min = minEndDate
+      .toISOString()
+      .slice(0, 10);
   };
 
   const handleEndDateChange = (e) => {
     const endDate = new Date(e.target.value);
     setEndDate(endDate);
   };
+
+  
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -56,51 +58,84 @@ const CreateEvent = () => {
       navigate("/dashboard-events");
       window.location.reload();
     }
-  }, [dispatch, error, success]);
+  }, [dispatch, error, success, navigate]);
 
+  // Fixed handleImageChange to store actual files
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
 
-    setImages([]);
+    // Only keep unique files by name and size
+    const uniqueFiles = files.filter(
+      (file) =>
+        !images.some((img) => img.name === file.name && img.size === file.size)
+    );
 
-    files.forEach((file) => {
+    const newImages = [...images, ...uniqueFiles];
+    setImages(newImages);
+
+    // Generate previews for new files only
+    const previews = [];
+    let loaded = 0;
+
+    uniqueFiles.forEach((file, idx) => {
       const reader = new FileReader();
-
       reader.onload = () => {
-        if (reader.readyState === 2) {
-          setImages((old) => [...old, reader.result]);
+        previews[idx] = reader.result;
+        loaded += 1;
+        if (loaded === uniqueFiles.length) {
+          setImagePreviews((prev) => [...prev, ...previews]);
         }
       };
       reader.readAsDataURL(file);
     });
+
+    // Clear the file input so the same file can be selected again if needed
+    e.target.value = "";
   };
 
+  // Fixed handleSubmit to use FormData properly
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const newForm = new FormData();
-
-    images.forEach((image) => {
-      newForm.append("images", image);
-    });
-    const data = {
+    console.log("Creating event with data:", {
       name,
       description,
       category,
-      tags,
-      originalPrice,
-      discountPrice,
-      stock,
-      images,
-      shopId: seller._id,
-      start_Date: startDate?.toISOString(),
-      Finish_Date: endDate?.toISOString(),
-    };
-    dispatch(createEvent(data));
+      images: images.length,
+      startDate,
+      endDate,
+    });
+
+    const formData = new FormData();
+
+    // Append actual File objects
+    images.forEach((image) => {
+      formData.append("images", image);
+    });
+
+    // Append other data
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("category", category);
+    formData.append("tags", tags);
+    formData.append("originalPrice", originalPrice ? Number(originalPrice) : 0);
+    formData.append("discountPrice", discountPrice ? Number(discountPrice) : 0);
+    formData.append("stock", stock ? Number(stock) : 0);
+    formData.append("shopId", seller._id);
+    formData.append("start_Date", startDate?.toISOString());
+    formData.append("Finish_Date", endDate?.toISOString());
+
+    // Debug FormData
+    console.log("FormData entries:");
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
+    dispatch(createEvent(formData));
   };
 
   return (
-    <div className="w-[90%] 800px:w-[50%] bg-white  shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll">
+    <div className="w-[90%] md:w-[50%] bg-white  shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll">
       <h5 className="text-[30px] font-Poppins text-center">Create Event</h5>
       {/* create event form */}
       <form onSubmit={handleSubmit}>
@@ -213,13 +248,13 @@ const CreateEvent = () => {
           </label>
           <input
             type="date"
-            name="price"
+            name="startDate"
             id="start-date"
             value={startDate ? startDate.toISOString().slice(0, 10) : ""}
             className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             onChange={handleStartDateChange}
             min={today}
-            placeholder="Enter your event product stock..."
+            required
           />
         </div>
         <br />
@@ -229,13 +264,11 @@ const CreateEvent = () => {
           </label>
           <input
             type="date"
-            name="price"
-            id="start-date"
+            name="endDate"
+            id="end-date"
             value={endDate ? endDate.toISOString().slice(0, 10) : ""}
             className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             onChange={handleEndDateChange}
-            min={minEndDate}
-            placeholder="Enter your event product stock..."
           />
         </div>
         <br />
@@ -256,10 +289,10 @@ const CreateEvent = () => {
               <AiOutlinePlusCircle size={30} className="mt-3" color="#555" />
             </label>
             {images &&
-              images.map((i) => (
+              images.map((image, index) => (
                 <img
-                  src={i}
-                  key={i}
+                  src={URL.createObjectURL(image)} // ✅ preview from file object
+                  key={index}
                   alt=""
                   className="h-[120px] w-[120px] object-cover m-2"
                 />

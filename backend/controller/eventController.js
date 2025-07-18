@@ -3,6 +3,7 @@ const Event = require("../model/event");
 const { upload } = require("../multer");
 const express = require("express");
 const ErrorHandler = require("../utils/ErrorHandler");
+const Shop = require("../model/shop");
 const router = express.Router();
 
 
@@ -12,7 +13,7 @@ router.post(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const shopId = req.body.shopId;
-      const shop = await Event.findById(shopId);
+      const shop = await Shop.findById(shopId);
       if (!shop) {
         return next(new ErrorHandler("ShopId is invalid!", 400));
       } else {
