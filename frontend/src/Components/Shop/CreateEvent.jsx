@@ -23,7 +23,7 @@ const CreateEvent = () => {
   const [endDate, setEndDate] = useState(null);
 
   const handleStartDateChange = (e) => {
-    console.log(e.target.value);
+    //console.log(e.target.value);
     const startDate = new Date(e.target.value);
     const minEndDate = new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000);
     setStartDate(startDate);
@@ -38,8 +38,6 @@ const CreateEvent = () => {
     const endDate = new Date(e.target.value);
     setEndDate(endDate);
   };
-
-  
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -60,11 +58,8 @@ const CreateEvent = () => {
     }
   }, [dispatch, error, success, navigate]);
 
-  // Fixed handleImageChange to store actual files
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-
-    // Only keep unique files by name and size
     const uniqueFiles = files.filter(
       (file) =>
         !images.some((img) => img.name === file.name && img.size === file.size)
@@ -73,7 +68,6 @@ const CreateEvent = () => {
     const newImages = [...images, ...uniqueFiles];
     setImages(newImages);
 
-    // Generate previews for new files only
     const previews = [];
     let loaded = 0;
 
@@ -89,31 +83,18 @@ const CreateEvent = () => {
       reader.readAsDataURL(file);
     });
 
-    // Clear the file input so the same file can be selected again if needed
     e.target.value = "";
   };
 
-  // Fixed handleSubmit to use FormData properly
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log("Creating event with data:", {
-      name,
-      description,
-      category,
-      images: images.length,
-      startDate,
-      endDate,
-    });
-
     const formData = new FormData();
 
-    // Append actual File objects
     images.forEach((image) => {
       formData.append("images", image);
     });
 
-    // Append other data
     formData.append("name", name);
     formData.append("description", description);
     formData.append("category", category);
@@ -124,13 +105,6 @@ const CreateEvent = () => {
     formData.append("shopId", seller._id);
     formData.append("start_Date", startDate?.toISOString());
     formData.append("Finish_Date", endDate?.toISOString());
-
-    // Debug FormData
-    console.log("FormData entries:");
-    for (let pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
-
     dispatch(createEvent(formData));
   };
 

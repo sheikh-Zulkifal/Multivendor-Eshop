@@ -24,3 +24,44 @@ export const createEvent = (newForm) => async (dispatch) => {
     });
   }
 };
+// Get all events of a shop
+export const getAllEventsShop = (id) => async (dispatch) => {
+  try {
+    dispatch({
+      type: "getAllEventsShopRequest",
+    });
+
+    const { data } = await axios.get(
+      `${server}/event/get-all-events/${id}`
+    );
+    dispatch({
+      type: "getAllEventsShopSuccess",
+      payload: data.events,
+    });
+  } catch (error) {
+    dispatch({
+      type: "getAllEventsShopFailed",
+      payload: error.response.data.message,
+    });
+  }
+};
+export const deleteEvent = (id) => async (dispatch) => {
+  try {
+    dispatch({
+      type: "deleteEventRequest",
+    });
+
+    const { data } = await axios.delete(
+      `${server}/event/delete-shop-event/${id}`,{withCredentials:true}
+    );
+    dispatch({
+      type: "deleteProductSuccess",
+      payload: data.message,
+    });
+  } catch (error) {
+    dispatch({
+      type: "getAllEventsShopFailed",
+      payload: error.response.data.message,
+    });
+  }
+};

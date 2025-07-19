@@ -13,13 +13,12 @@ const { isAuthenticated } = require("../middleware/auth");
 
 // Create User Route
 router.post("/create-user", upload.single("avatar"), async (req, res, next) => {
-  const filename = req?.file?.filename;
-
+  
+const filename = req?.file?.filename;
   const { name, email, password } = req.body;
   const userEmail = await User.findOne({ email });
 
   if (userEmail) {
-    // Delete uploaded file
     const filePath = `uploads/${filename}`;
     fs.unlink(filePath, (err) => {
       if (err) {
