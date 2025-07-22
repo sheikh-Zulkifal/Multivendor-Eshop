@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "../../styles/styles";
 import {
   AiFillHeart,
@@ -8,12 +9,21 @@ import {
   AiOutlineShoppingCart,
 } from "react-icons/ai";
 
+import Ratings from "./Ratings";
+
 const ProductDetails = ({ data }) => {
+  const { user, isAuthenticated } = useSelector((state) => state.user);
+  const { products } = useSelector((state) => state.products);
   const [count, setCount] = React.useState(1);
   const [click, setClick] = React.useState(false);
   const [select, setSelect] = React.useState(0);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllProductsShop(data && data?.shop._id));
+  }, [data]);
 
   const incrementCount = () => {
     setCount(count + 1);
@@ -23,6 +33,13 @@ const ProductDetails = ({ data }) => {
       setCount(count - 1);
     }
   };
+  const totalRatings =
+    products &&
+    products.reduce(
+      (acc, product) =>
+        acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
+      0
+    );
   const handleMessageSubmit = () => {
     navigate("inbox?conservationId=12345");
   };
@@ -154,7 +171,9 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
           </div>
-          <ProductDetailsInfo data={data} /><br /><br /> 
+          <ProductDetailsInfo data={data} />
+          <br />
+          <br />
         </div>
       ) : null}
     </div>
@@ -239,8 +258,8 @@ const ProductDetailsInfo = ({ data }) => {
         </>
       ) : null}
       {active === 2 ? (
-        <div className="w-full min-h-[40vh] flex justify-center items-center"> 
-        {/* flex-col  py-3 overflow-y-scroll */}
+        <div className="w-full min-h-[40vh] flex justify-center items-center">
+          {/* flex-col  py-3 overflow-y-scroll */}
           <p>No reviews yet!</p>
         </div>
       ) : null}

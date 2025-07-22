@@ -4,7 +4,7 @@ import Footer from '../components/layout/Footer';
 import styles from '../styles/styles';
 import { useSearchParams } from 'react-router-dom';
 import { productData } from '../static/data';
-import ProductCard from '../components/Route/ProductCard/ProductCard';
+import ProductCard from '../Components/Route/ProductCard/ProductCard';
 
 const ProductsPage = () => {
     const [data, setData] = useState([]);

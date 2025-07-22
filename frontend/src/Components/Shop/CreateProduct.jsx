@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { categoriesData } from "../../static/data";
 import { AiOutlinePlusCircle } from "react-icons/ai";
-import { createProduct } from "../../../redux/actions/product";
+import { createProduct } from "../../redux/actions/product";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 

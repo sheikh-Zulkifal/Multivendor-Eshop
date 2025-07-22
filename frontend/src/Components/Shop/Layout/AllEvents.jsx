@@ -6,13 +6,13 @@ import { Link } from "react-router-dom";
 import Loader from "../../layout/Loader";
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { deleteEvent, getAllEventsShop } from "../../../../redux/actions/event";
+import { deleteEvent, getAllEventsShop } from "../../../redux/actions/eventAction";
 
 
 const AllEvents = () => {
   const { events, isLoading } = useSelector((state) => state.events);
   const { seller } = useSelector((state) => state.seller);
-  console.log(events);
+  
   
 
 

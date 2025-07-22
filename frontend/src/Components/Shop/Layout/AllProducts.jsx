@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import Loader from "../../layout/Loader";
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { deleteProduct, getAllProductsShop } from "../../../../redux/actions/product";
+import { deleteProduct, getAllProductsShop } from "../../../redux/actions/productAction";
 
 const AllProducts = () => {
   const { products, isLoading } = useSelector((state) => state.products);

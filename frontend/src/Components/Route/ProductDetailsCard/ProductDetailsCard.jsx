@@ -1,12 +1,22 @@
 import React, { useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import styles from "../../../styles/styles";
-import { AiFillHeart, AiOutlineHeart, AiOutlineMessage, AiOutlineShoppingCart } from "react-icons/ai";
+import {
+  AiFillHeart,
+  AiOutlineHeart,
+  AiOutlineMessage,
+  AiOutlineShoppingCart,
+} from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { backend_url } from "../../../server";
 
 function ProductDetailsCard({ setOpen, data }) {
+  const dispatch = useDispatch();
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
-  const [select, setSelect] = useState(false);
+  // const [select, setSelect] = useState(false);
+  console.log(data);
 
   const handleMessageSubmit = () => {};
   const decrementCount = () => {
@@ -30,17 +40,17 @@ function ProductDetailsCard({ setOpen, data }) {
             />
             <div className="block w-full md:flex">
               <div className="w-full md:w-[50%]">
-                <img src={data.image_Url[0].url} alt="" />
+                <img src={`${backend_url}${data?.images?.[0]}`} alt="" />
                 <div className="flex">
                   <img
-                    src={data.shop.shop_avatar.url}
+                    src={data.shop.avatar.url}
                     alt=""
                     className="w-[50px] h-[50px] rounded-full mr-2"
                   />
                   <div>
                     <h3 className={`${styles.shop_name}`}>{data.shop.name}</h3>
                     <h5 className="pb-3 text-[15px]">
-                      ({data?.shop.ratings}) Ratings
+                      ({data?.ratings}) Ratings
                     </h5>
                   </div>
                 </div>
@@ -53,7 +63,7 @@ function ProductDetailsCard({ setOpen, data }) {
                   </span>
                 </div>
                 <h5 className="text-[16px] text-[red] mt-5">
-                  ({data.total_sell}) Sold out
+                  ({data.sold_out}) Sold out
                 </h5>
               </div>
               <div className="w-full md:w-[50%] pt-5 pl-[5px] pr-[5px]">
@@ -64,7 +74,7 @@ function ProductDetailsCard({ setOpen, data }) {
 
                 <div className="flex pt-3">
                   <h4 className={`${styles.productDiscountPrice}`}>
-                    {data.discount_price}$
+                    {data.discountPrice}$
                   </h4>
                   <h3 className={`${styles.price}`}>
                     {data.price ? data.price + "$" : null}
@@ -107,9 +117,9 @@ function ProductDetailsCard({ setOpen, data }) {
                     )}
                   </div>
                 </div>
-                 <div
+                <div
                   className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center`}
-                //   onClick={() => addToCartHandler(data._id)}
+                  //   onClick={() => addToCartHandler(data._id)}
                 >
                   <span className="text-[#fff] flex items-center">
                     Add to cart <AiOutlineShoppingCart className="ml-1" />

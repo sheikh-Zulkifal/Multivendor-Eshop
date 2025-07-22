@@ -1,14 +1,30 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import {productData} from "../../static/data"
-import styles from '../../styles/styles';
-import ProductCard from '../Route/ProductCard/ProductCard';
-import { useState } from 'react';
+import React, { use, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { productData } from "../../static/data";
+import styles from "../../styles/styles";
+import ProductCard from "../Route/ProductCard/ProductCard";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProductsShop } from "../../redux/actions/product";
+import { getAllEventsShop } from "../../redux/actions/event";
 
 const ShopProfileData = ({ isOwner }) => {
-    const [active, setActive] = useState(1);
+  const { products } = useSelector((state) => state.products);
+  const { events } = useSelector((state) => state.events);
+
+  const { id } = useParams();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllProductsShop(id));
+    dispatch(getAllEventsShop(id));
+  }, [dispatch, id]);
+
+  const [active, setActive] = useState(1);
+
   return (
-     <div className="w-full">
+    <div className="w-full">
       <div className="flex w-full items-center justify-between">
         <div className="w-full flex">
           <div className="flex items-center" onClick={() => setActive(1)}>
@@ -56,14 +72,14 @@ const ShopProfileData = ({ isOwner }) => {
       <br />
       {active === 1 && (
         <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
-          {productData    &&
-            productData.map((i, index) => (
+          {products &&
+            products.map((i, index) => (
               <ProductCard data={i} key={index} isShop={true} />
             ))}
         </div>
       )}
 
-      {/* {active === 2 && (
+      {active === 2 && (
         <div className="w-full">
           <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:grid-cols-4 xl:gap-[20px] mb-12 border-0">
             {events &&
@@ -84,7 +100,7 @@ const ShopProfileData = ({ isOwner }) => {
         </div>
       )}
 
-      {active === 3 && (
+      {/*  {active === 3 && (
         <div className="w-full">
           {allReviews &&
             allReviews.map((item, index) => (
@@ -112,7 +128,7 @@ const ShopProfileData = ({ isOwner }) => {
         </div>
       )} */}
     </div>
-  )
-}
+  );
+};
 
-export default ShopProfileData
+export default ShopProfileData;
