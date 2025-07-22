@@ -1,5 +1,5 @@
 import axios from "axios";
-import { server } from "../../src/server";
+import { server } from "../../server";
 
 export const createProduct = (newForm) => async (dispatch) => {
   try {
@@ -7,7 +7,7 @@ export const createProduct = (newForm) => async (dispatch) => {
       type: "productCreateRequest",
     });
 
-    const config = { headers: { "Content-Type": "multipart/formdata" } };
+    const config = { headers: { "Content-Type": "multipart/form-data" } };
     const { data } = await axios.post(
       `${server}/product/create-product`,
       newForm,
@@ -62,6 +62,25 @@ export const deleteProduct = (id) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: "getAllProductsShopFailed",
+      payload: error.response.data.message,
+    });
+  }
+};
+// get all products
+export const getAllProducts = () => async (dispatch) => {
+  try {
+    dispatch({
+      type: "getAllProductsRequest",
+    });
+
+    const { data } = await axios.get(`${server}/product/get-all-products`);
+    dispatch({
+      type: "getAllProductsSuccess",
+      payload: data.products,
+    });
+  } catch (error) {
+    dispatch({
+      type: "getAllProductsFailed",
       payload: error.response.data.message,
     });
   }
