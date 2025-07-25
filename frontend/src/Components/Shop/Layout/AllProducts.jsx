@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,18 +5,18 @@ import { Link } from "react-router-dom";
 import Loader from "../../layout/Loader";
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { deleteProduct, getAllProductsShop } from "../../../redux/actions/product";
+import {
+  deleteProduct,
+  getAllProductsShop,
+} from "../../../redux/actions/product";
 
 const AllProducts = () => {
   const { products, isLoading } = useSelector((state) => state.products);
   const { seller } = useSelector((state) => state.seller);
 
-  
-
-
   const dispatch = useDispatch();
 
-  useEffect(() => { 
+  useEffect(() => {
     dispatch(getAllProductsShop(seller._id));
   }, [dispatch]);
 
@@ -25,8 +24,6 @@ const AllProducts = () => {
     dispatch(deleteProduct(id));
     window.location.reload();
   };
-
-
 
   const columns = [
     { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },
@@ -66,7 +63,7 @@ const AllProducts = () => {
       sortable: false,
       renderCell: (params) => {
         const d = params.row.id;
-        const product_name = params.row.name.replace(/\s+/g, "-")
+        const product_name = params.row.name.replace(/\s+/g, "-");
         return (
           <>
             <Link to={`/product/${params.id}`}>

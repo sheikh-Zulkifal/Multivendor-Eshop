@@ -2,6 +2,8 @@ import { createReducer } from "@reduxjs/toolkit";
 
 const initialState = {
   isLoading: false,
+  allProducts: [] ,
+
 };
 
 export const productReducer = createReducer(initialState, (builder) => {
@@ -43,12 +45,13 @@ export const productReducer = createReducer(initialState, (builder) => {
       state.isLoading = false;
       state.error = action.payload;
     })
+    // get all products
     .addCase("getAllProductsRequest", (state) => {
       state.isLoading = true;
     })
     .addCase("getAllProductsSuccess", (state, action) => {
       state.isLoading = false;
-      state.allproducts = action.payload;
+      state.allProducts = action.payload;
     })
     .addCase("getAllProductsFailed", (state, action) => {
       state.isLoading = false;

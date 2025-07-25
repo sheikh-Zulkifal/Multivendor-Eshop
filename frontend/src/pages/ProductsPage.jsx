@@ -4,25 +4,34 @@ import Footer from '../components/layout/Footer';
 import styles from '../styles/styles';
 import { useSearchParams } from 'react-router-dom';
 import { productData } from '../static/data';
+import Loader from "../Components/layout/Loader"
 import ProductCard from '../Components/Route/ProductCard/ProductCard';
+import { useSelector } from 'react-redux';
 
 const ProductsPage = () => {
     const [data, setData] = useState([]);
     const [searchParams] = useSearchParams()
     const categoryData = searchParams.get('category');
+  const {allProducts,isLoading} = useSelector((state) => state.products);
 
-    useEffect(() => {
-     if(categoryData  === null ){
-         const d = productData && productData.sort((a,b)=>a.total_sell - b.total_sell)
-         setData(d);
-     }else{
-        const d = productData && productData.filter((i)=>i.category === categoryData)
-        setData(d);
-     }
-    //  window.scrollTo(0, 0);
-    }, []);
+     useEffect(() => {
+    if (categoryData === null) {
+      const d = allProducts;
+      setData(d);
+    } else {
+      const d =
+      allProducts && allProducts.filter((i) => i.category === categoryData);
+      setData(d);
+    }
+    //    window.scrollTo(0,0);
+  }, [allProducts]);
     
   return (
+    <>
+     {
+    isLoading ? (
+      <Loader />
+    ) : (
     <div>
         <Header activeHeading={3}   />
        <br />
@@ -39,6 +48,8 @@ const ProductsPage = () => {
       </div>
       <Footer />
     </div>
+    )
+  }</>
     )
   }
 

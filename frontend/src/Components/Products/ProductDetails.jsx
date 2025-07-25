@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "../../styles/styles";
@@ -10,6 +10,7 @@ import {
 } from "react-icons/ai";
 
 import Ratings from "./Ratings";
+import { getAllProductsShop } from "../../redux/actions/product";
 
 const ProductDetails = ({ data }) => {
   const { user, isAuthenticated } = useSelector((state) => state.user);
@@ -33,13 +34,13 @@ const ProductDetails = ({ data }) => {
       setCount(count - 1);
     }
   };
-  const totalRatings =
-    products &&
-    products.reduce(
-      (acc, product) =>
-        acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
-      0
-    );
+  // const totalRatings =
+  //   products &&
+  //   products.reduce(
+  //     (acc, product) =>
+  //       acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
+  //     0
+  //   );
   const handleMessageSubmit = () => {
     navigate("inbox?conservationId=12345");
   };
