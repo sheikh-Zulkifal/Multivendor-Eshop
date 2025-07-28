@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "../../styles/styles";
 import { Link } from "react-router-dom";
 import { categoriesData, productData } from "../../static/data";
@@ -27,18 +27,23 @@ const Header = ({ activeHeading }) => {
   const [dropDown, setDropDown] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const [openWishlist, setOpenWishlist] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+
   const [open, setOpen] = useState(false);
+  const { allProducts } = useSelector((state) => state.products);
 
   const handleSearchChange = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
 
-    const filteredProducts = productData.filter((product) =>
+    const filteredProducts = allProducts.filter((product) =>
       product.name.toLowerCase().includes(term.toLowerCase())
     );
 
     setSearchData(filteredProducts);
+    setShowDropdown(true); // 👈 show dropdown on typing
   };
+
   window.addEventListener("scroll", () => {
     if (window.scrollY > 70) {
       setActive(true);
@@ -46,6 +51,22 @@ const Header = ({ activeHeading }) => {
       setActive(false);
     }
   });
+  const searchBoxRef = useRef();
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchBoxRef.current &&
+        !searchBoxRef.current.contains(event.target)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -53,15 +74,15 @@ const Header = ({ activeHeading }) => {
         <div className="  hidden md:h-[50px]  md:my-[20px] md:flex items-center justify-between ">
           <div>
             <Link to="/">
-              <img
-                src="https://shopo.quomodothemes.website/assets/images/logo.svg"
-                alt="Shopo Logo"
-                className="h-10 w-auto"
-              />
+              <div className="flex items-center">
+                <h1 className="text-5xl font-bold text-blue-600 hover:text-blue-700 transition-colors">
+                  ShopMe
+                </h1>
+              </div>
             </Link>
           </div>
 
-          <div className="w-[50%] relative">
+          <div className="w-[50%] relative" ref={searchBoxRef}>
             <input
               type="text"
               placeholder="Search Product..."
@@ -73,28 +94,34 @@ const Header = ({ activeHeading }) => {
               size={30}
               className="absolute right-2 top-1.5 cursor-pointer text-gray-600"
             />
-            {searchData && searchData.length !== 0 ? (
+            {showDropdown && searchData && searchData.length !== 0 && (
               <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
-                {searchData &&
-                  searchData.map((product, index) => {
-                    const Product_name = product.name
-                      .replace(/\s+/g, "-")
-                      .toLowerCase();
-                    return (
-                      <Link to={`/product/${Product_name}`} key={index}>
-                        <div className="w-full flex items-start py-3">
-                          <img
-                            src={product.image_Url[0]?.url}
-                            alt=""
-                            className="w-[40px] h-[40px] mr-[10px]"
-                          />
-                          <h1>{product.name}</h1>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                {searchData.map((product, index) => {
+                  const Product_name = product.name
+                    .replace(/\s+/g, "-")
+                    .toLowerCase();
+                  return (
+                    <Link
+                      to={`/product/${Product_name}`}
+                      key={index}
+                      onClick={() => {
+                        setShowDropdown(false); // 👈 hide dropdown on click
+                        setSearchTerm(""); // optional: clear search
+                      }}
+                    >
+                      <div className="w-full flex items-start py-3">
+                        <img
+                          src={getImageUrl(product.images[0])}
+                          alt=""
+                          className="w-[40px] h-[40px] mr-[10px]"
+                        />
+                        <h1>{product.name}</h1>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
-            ) : null}
+            )}
           </div>
           <div className={`${styles.button}`}>
             <Link to="/shop-create">
@@ -307,7 +334,7 @@ const Header = ({ activeHeading }) => {
                   <div>
                     <Link to="/profile">
                       <img
-                        src={getImageUrl(user.avatar)   }
+                        src={getImageUrl(user.avatar)}
                         alt=""
                         className="w-[60px] h-[60px] rounded-full border-[3px] border-[#0eae88]"
                       />

@@ -26,8 +26,8 @@ function ProductCard({ data, isEvent }) {
         <Link
           to={`${
             isEvent === true
-              ? `/product/${data._id}?isEvent=true`
-              : `/product/${data._id}`
+              ? `/product/${data.name.replace(/ /g, "-")}?isEvent=true`
+              : `/product/${data.name.replace(/ /g, "-")}`
           }`}
         >
           <img

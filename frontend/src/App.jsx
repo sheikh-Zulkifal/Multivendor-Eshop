@@ -33,11 +33,13 @@ import {
   ShopPreviewPage,
 } from "./routes/ShopRoutes.js";
 import SellerProtectedRoute from "./routes/SellerProtectedRoute.jsx";
+import { getAllProducts } from "./redux/actions/product.js";
 
 function App() {
   useEffect(() => {
     Store.dispatch(loadUser());
     Store.dispatch(loadSeller());
+    Store.dispatch(getAllProducts())
   }, []);
 
   return (

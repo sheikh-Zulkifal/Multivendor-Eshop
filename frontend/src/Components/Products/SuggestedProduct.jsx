@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { productData } from "../../static/data";
 import ProductCard from "../Route/ProductCard/ProductCard"
 import styles from "../../styles/styles";
