@@ -19,7 +19,7 @@ export const eventReducer = createReducer(initialState, (builder) => {
       state.error = action.payload;
       state.success = false;
     })
-    // get all events
+    // get all events shop
     .addCase("getAllEventsShopRequest", (state) => {
       state.isLoading = true;
     })
@@ -31,6 +31,19 @@ export const eventReducer = createReducer(initialState, (builder) => {
       state.isLoading = false;
       state.error = action.payload;
     })
+    // get all events
+    .addCase("getAllEventsRequest", (state) => {
+      state.isLoading = true;
+    })
+    .addCase("getAllEventsSuccess", (state, action) => {
+      state.isLoading = false;
+      state.allEvents = action.payload;
+    })
+    .addCase("getAllEventsFailed", (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
+
     // delete event of a shop
     .addCase("deleteEventRequest", (state)=>{
       state.isLoading = true

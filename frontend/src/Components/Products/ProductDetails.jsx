@@ -250,7 +250,8 @@ const ProductDetailsInfo = ({ data,products }) => {
       {active === 3 && (
         <div className="w-full block md:flex p-5">
           <div className="w-full md:w-[50%]">
-            <div className="flex items-center">
+           <Link to={`/shop/preview/${data.shop._id}`}>
+           <div className="flex items-center">
               <img
                 src={getImageUrl(data?.shop?.avatar?.url)}
                 className="w-[50px] h-[50px] rounded-full"
@@ -263,6 +264,8 @@ const ProductDetailsInfo = ({ data,products }) => {
                 </h5>
               </div>
             </div>
+           </Link>
+
             <p className="pt-2">{data.shop.description}</p>
           </div>
           <div className="w-full md:w-[50%] mt-5 md:mt-0 md:flex flex-col items-end">

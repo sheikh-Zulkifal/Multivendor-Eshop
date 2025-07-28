@@ -36,7 +36,7 @@ router.post(
     }
   })
 );
-// get all products
+// get all events of a shop
 
 router.get(
   "/get-all-events/:id",
@@ -52,6 +52,24 @@ router.get(
     }
   })
 );
+
+// get all events 
+router.get(
+  "/get-all-events",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const events = await Event.find();
+      res.status(200).json({
+        success: true,
+        events  ,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
+
 // delete product
 router.delete(
   "/delete-shop-event/:id",
