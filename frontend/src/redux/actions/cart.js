@@ -1,6 +1,6 @@
 export const addToCart = (data) => async (dispatch, getState) => {
-  console.log("This is Rich Aqib");
-  
+  // console.log("This is Rich Aqib");
+
   dispatch({
     type: "addToCart",
     payload: data,
