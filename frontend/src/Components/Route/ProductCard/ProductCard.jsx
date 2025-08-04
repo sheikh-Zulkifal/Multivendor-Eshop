@@ -13,8 +13,10 @@ import ProductDetailsCard from "../ProductDetailsCard/ProductDetailsCard.jsx";
 import Ratings from "../../Products/Ratings.jsx";
 import getImageUrl from "../../../utils/getImageUrl.js";
 import { backend_url, server } from "../../../server.js";
+import { useSelector } from "react-redux";
 
 function ProductCard({ data, isEvent }) {
+  const {cart} = useSelector((state) => state.cart);
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
   // console.log(data);

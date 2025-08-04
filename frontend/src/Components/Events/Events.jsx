@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styles from "../../styles/styles";
 import EventCard from "./EventCard.jsx";
 import { useSelector } from "react-redux";
 
 const Events = () => {
   const { allEvents, isLoading } = useSelector((state) => state.events);
+
   return (
     <div>
-      {!isLoading && (
+      {!isLoading && allEvents && allEvents.length > 0 && (
         <div className={`${styles.section}`}>
           <div className={`${styles.heading}`}>
             <h1>Popular Events</h1>
