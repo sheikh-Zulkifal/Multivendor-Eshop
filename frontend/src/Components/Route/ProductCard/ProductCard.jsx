@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "../../../styles/styles.js";
 import {
@@ -13,14 +13,52 @@ import ProductDetailsCard from "../ProductDetailsCard/ProductDetailsCard.jsx";
 import Ratings from "../../Products/Ratings.jsx";
 import getImageUrl from "../../../utils/getImageUrl.js";
 import { backend_url, server } from "../../../server.js";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "../../../redux/actions/wishlist.js";
+import { addToCart } from "../../../redux/actions/cart.js";
+import { toast } from "react-toastify";
 
 function ProductCard({ data, isEvent }) {
-  const {cart} = useSelector((state) => state.cart);
+  const { cart } = useSelector((state) => state.cart);
+  const { wishlist } = useSelector((state) => state.wishlist);
+
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
-  // console.log(data);
 
+  const dispatch = useDispatch();
+  const removeFromWishlistHandler = (data) => {
+    setClick(!click);
+    dispatch(removeFromWishlist(data));
+  }; 
+  const addToWishlistHandler = () => {
+    setClick(!click);
+    dispatch(addToWishlist(data));
+  };
+useEffect(() => {
+  if(wishlist && wishlist.find((i) => i._id === data._id)) {
+    setClick(true);
+  }else {
+    setClick(false);
+  }
+}, [wishlist]);
+const addToCartHandler = (id) => {
+    const isItemExists = cart && cart.find((i) => i._id === id);
+
+    if (isItemExists) {
+      toast.error("Item already in cart!");
+    } else {
+      if (data.stock < 1) {
+        toast.error("Product stock limited!");
+      } else {
+        const cartData = { ...data, qty: 1 };
+        dispatch(addToCart(cartData));
+        toast.success("Item added to cart successfully!");
+      }
+    }
+  };
   return (
     <>
       <div className="w-full h-[370px] bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
@@ -34,7 +72,6 @@ function ProductCard({ data, isEvent }) {
         >
           <img
             src={`${backend_url}${data?.images?.[0]}`}
-
             alt=""
             className="w-full h-[170px] object-contain"
           />
@@ -80,7 +117,7 @@ function ProductCard({ data, isEvent }) {
             <AiFillHeart
               size={22}
               className="cursor-pointer absolute right-2 top-5"
-              onClick={() => setClick(!click)}
+              onClick={() => removeFromWishlistHandler(data)}
               color={click ? "red" : "#333"}
               title="Remove from wishlist"
             />
@@ -88,7 +125,7 @@ function ProductCard({ data, isEvent }) {
             <AiOutlineHeart
               size={22}
               className="cursor-pointer absolute right-2 top-5"
-              onClick={() => setClick(!click)}
+              onClick={() => addToWishlistHandler(data)}
               color={click ? "red" : "#333"}
               title="Add to wishlist"
             />
@@ -103,7 +140,7 @@ function ProductCard({ data, isEvent }) {
           <AiOutlineShoppingCart
             size={25}
             className="cursor-pointer absolute right-2 top-24"
-            onClick={() => setOpen(!open)}
+            onClick={() => addToCartHandler(data._id)}
             color="#444"
             title="Add to cart"
           />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { RxCross1 } from "react-icons/rx";
 import styles from "../../../styles/styles";
 import {
@@ -11,14 +11,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { backend_url } from "../../../server";
 import { addToCart } from "../../../redux/actions/cart";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "../../../redux/actions/wishlist";
 
 function ProductDetailsCard({ setOpen, data }) {
   const { cart } = useSelector((state) => state.cart);
+  const { wishlist } = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   // const [select, setSelect] = useState(false);
-
 
   const handleMessageSubmit = () => {};
   const decrementCount = () => {
@@ -33,8 +37,7 @@ function ProductDetailsCard({ setOpen, data }) {
 
   const addToCartHandler = (id) => {
     const isItemExists = cart && cart.find((i) => i._id === id);
-    
-    
+
     if (isItemExists) {
       toast.error("Item already in cart!");
     } else {
@@ -47,6 +50,21 @@ function ProductDetailsCard({ setOpen, data }) {
       }
     }
   };
+  const removeFromWishlistHandler = (data) => {
+    setClick(!click);
+    dispatch(removeFromWishlist(data));
+  };
+  const addToWishlistHandler = () => {
+    setClick(!click);
+    dispatch(addToWishlist(data));
+  };
+  useEffect(() => {
+    if (wishlist && wishlist.find((i) => i._id === data._id)) {
+      setClick(true);
+    } else {
+      setClick(false);
+    }
+  }, [wishlist]);
 
   return (
     <div className="bg-[#fff]">
@@ -123,7 +141,7 @@ function ProductDetailsCard({ setOpen, data }) {
                       <AiFillHeart
                         size={30}
                         className="cursor-pointer"
-                        onClick={() => setClick(!click)}
+                        onClick={() => removeFromWishlistHandler(data)}
                         color={click ? "red" : "#333"}
                         title="Remove from wishlist"
                       />
@@ -131,7 +149,7 @@ function ProductDetailsCard({ setOpen, data }) {
                       <AiOutlineHeart
                         size={30}
                         className="cursor-pointer"
-                        onClick={() => setClick(!click)}
+                        onClick={() => addToWishlistHandler(data)}
                         title="Add to wishlist"
                       />
                     )}
