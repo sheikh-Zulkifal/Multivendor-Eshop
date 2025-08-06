@@ -29,6 +29,13 @@ function ProductCard({ data, isEvent }) {
   const [open, setOpen] = useState(false);
 
   const dispatch = useDispatch();
+  useEffect(() => {
+  if(wishlist && wishlist.find((i) => i._id === data._id)) {
+    setClick(true);
+  }else {
+    setClick(false);
+  }
+}, [wishlist]);
   const removeFromWishlistHandler = (data) => {
     setClick(!click);
     dispatch(removeFromWishlist(data));
@@ -37,13 +44,7 @@ function ProductCard({ data, isEvent }) {
     setClick(!click);
     dispatch(addToWishlist(data));
   };
-useEffect(() => {
-  if(wishlist && wishlist.find((i) => i._id === data._id)) {
-    setClick(true);
-  }else {
-    setClick(false);
-  }
-}, [wishlist]);
+
 const addToCartHandler = (id) => {
     const isItemExists = cart && cart.find((i) => i._id === id);
 
@@ -66,8 +67,8 @@ const addToCartHandler = (id) => {
         <Link
           to={`${
             isEvent === true
-              ? `/product/${data.name.replace(/ /g, "-")}?isEvent=true`
-              : `/product/${data.name.replace(/ /g, "-")}`
+              ? `/product/${data._id}?isEvent=true`
+              : `/product/${data._id}`
           }`}
         >
           <img

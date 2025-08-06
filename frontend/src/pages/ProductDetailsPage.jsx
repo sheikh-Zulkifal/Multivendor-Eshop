@@ -9,26 +9,19 @@ import { getAllProducts } from "../redux/actions/product"; // If you have this a
 
 const ProductDetailsPage = () => {
   const { allProducts } = useSelector((state) => state.products);
+   
+    
+  
   const dispatch = useDispatch();
-  const { name } = useParams();
+  const { id } = useParams();
   const [data, setData] = useState(null);
-  const productName = name.replace(/-/g, " ");
+ 
 
   useEffect(() => {
-    // If allProducts might be empty on reload, fetch them
-    if (!allProducts || allProducts.length === 0) {
-      dispatch(getAllProducts());
-    }
-  }, [dispatch, allProducts]);
-
-  useEffect(() => {
-    if (allProducts && allProducts.length > 0) {
-      const found = allProducts.find(
-        (item) => item.name.toLowerCase() === productName.toLowerCase()
-      );
-      setData(found || null);
-    }
-  }, [allProducts, productName]);
+    const data = allProducts && allProducts.find((item) => item._id === id);
+    setData(data);
+  }, [data, allProducts]);
+  
 
   return (
     <div>

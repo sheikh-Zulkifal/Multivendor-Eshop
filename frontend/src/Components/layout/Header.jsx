@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 import { backend_url } from "../../server.js";
 import getImageUrl from "../../utils/getImageUrl.js";
 import Cart from "../Cart/Cart.jsx";
-import Wishlist from "../Wishlist/Wishlist.jsx";
+import Wishlist from "../wishlist/Wishlist.jsx";
 import { RxCross1 } from "react-icons/rx";
 
 const Header = ({ activeHeading }) => {
@@ -99,12 +99,11 @@ const Header = ({ activeHeading }) => {
             {showDropdown && searchData && searchData.length !== 0 && (
               <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
                 {searchData.map((product, index) => {
-                  const Product_name = product.name
-                    .replace(/\s+/g, "-")
-                    .toLowerCase();
+
+                   
                   return (
                     <Link
-                      to={`/product/${Product_name}`}
+                      to={`/product/${product._id}`}
                       key={index}
                       onClick={() => {
                         setShowDropdown(false); // 👈 hide dropdown on click
@@ -299,11 +298,9 @@ const Header = ({ activeHeading }) => {
                 {searchData && (
                   <div className="absolute bg-[#fff] z-10 shadow w-full left-0 p-3">
                     {searchData.map((i) => {
-                      const d = i.name;
-
-                      const Product_name = d.replace(/\s+/g, "-");
+                     
                       return (
-                        <Link to={`/product/${Product_name}`}>
+                        <Link to={`/product/${i._id}`}>
                           <div className="flex items-center">
                             <img
                               src={i.image_Url[0]?.url}
