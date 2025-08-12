@@ -13,8 +13,7 @@ const { isAuthenticated } = require("../middleware/auth");
 
 // Create User Route
 router.post("/create-user", upload.single("avatar"), async (req, res, next) => {
-  
-const filename = req?.file?.filename;
+  const filename = req?.file?.filename;
   const { name, email, password } = req.body;
   const userEmail = await User.findOne({ email });
 
@@ -30,7 +29,6 @@ const filename = req?.file?.filename;
   }
 
   const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${filename}`;
-
 
   const user = {
     name,
@@ -105,7 +103,7 @@ router.post(
 );
 
 router.post(
-"/login-user",
+  "/login-user",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { email, password } = req.body;
@@ -117,47 +115,133 @@ router.post(
         return next(new ErrorHandler("User doesn't exsits!", 400));
       }
       const isPasswordValid = await user.comparePassword(password);
-      if(!isPasswordValid){
+      if (!isPasswordValid) {
         return next(new ErrorHandler("Provide Correct Information!", 400));
       }
-      sendToken(user,201,res)
+      sendToken(user, 201, res);
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
   })
 );
 
-router.get("/getuser", isAuthenticated, catchAsyncErrors(async(req,res,next)=>{
-  try {
-    const user = await User.findById(req.user.id)
-  if(!user){
-    return next(new ErrorHandler("User not exists!", 400));
-  }
-  res.status(200).json({
-    success:true,
-    user
-  })
-  } catch (error) {
+router.get(
+  "/getuser",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user.id);
+      if (!user) {
+        return next(new ErrorHandler("User not exists!", 400));
+      }
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
       return next(new ErrorHandler(error.message, 500));
-    
-  }
-}))
+    }
+  })
+);
 
-router.get("/logout", isAuthenticated, catchAsyncErrors(async (req, res)=>{
-  try {
-    res.cookie("token", null,{
-      expires: new Date(Date.now()),
-      httpOnly: true,
-    })
+router.get(
+  "/logout",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res) => {
+    try {
+      res.cookie("token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+      });
 
-    res.status(201).json({
-      success: true,
-      message: "Logged out successfully",
-    })
-    
-  } catch (error) {
-    return next(new ErrorHandler(error.message, 500));
-  }
-}))
+      res.status(201).json({
+        success: true,
+        message: "Logged out successfully",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// Update User Information
+router.put(
+  "/update-user-info",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { name, email, password, phoneNumber } = req.body;
+
+      const user = await User.findOne({ email }).select("+password");
+
+      if (!user) {
+        return next(new ErrorHandler("User not found!", 400));
+      }
+      const isPasswordValid = await user.comparePassword(password);
+      if (!isPasswordValid) {
+        return next(
+          new ErrorHandler("Please provide correct information!", 400)
+        );
+      }
+
+      user.name = name;
+      user.email = email;
+      user.phoneNumber = phoneNumber;
+
+      await user.save();
+
+      res.status(201).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// update user avatr
+
+// Update user avatar
+router.put(
+  "/update-avatar",
+  isAuthenticated,
+  upload.single("image"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user.id);
+
+      // Delete the old avatar if exists
+      if (user.avatar && user.avatar.url) {
+        const oldPath = path.join(
+          __dirname,
+          "..",
+          user.avatar.url.replace(`${req.protocol}://${req.get("host")}/`, "")
+        );
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+
+      // Save the new avatar
+      const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${
+        req.file.filename
+      }`;
+
+      user.avatar = {
+        url: fileUrl,
+      };
+
+      await user.save();
+
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
 module.exports = router;
