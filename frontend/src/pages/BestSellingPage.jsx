@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import styles from '../styles/styles'
 import ProductCard from '../Components/Route/ProductCard/ProductCard'
-import Footer from '../components/layout/Footer'
-import Header from '../components/layout/Header'
+import Footer from '../Components/layout/Footer'
+import Header from '../Components/layout/Header'
 import { useDispatch, useSelector } from 'react-redux'
-import Loader from '../components/layout/Loader'
+import Loader from '../Components/layout/Loader'
 import { getAllProducts } from '../redux/actions/product'
 
 const BestSellingPage = () => {

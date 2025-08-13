@@ -1,8 +1,8 @@
 import React from 'react';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import Header from '../Components/layout/Header';
+import Footer from '../Components/layout/Footer';
 import CheckoutSteps from "../Components/Checkout/CheckoutSteps.jsx";
-import Checkout from '../components/Checkout/Checkout.jsx';
+import Checkout from '../Components/Checkout/Checkout.jsx';
 
 
 

@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
-import Header from "../components/layout/Header";
-import Footer from "../components/layout/Footer";
+import Header from "../Components/layout/Header";
+import Footer from "../Components/layout/Footer";
 import styles from "../styles/styles";
 
 const FAQPage = () => {

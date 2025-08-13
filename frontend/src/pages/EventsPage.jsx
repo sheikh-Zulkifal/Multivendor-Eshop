@@ -1,6 +1,6 @@
 import React from 'react'
-import Header from '../components/layout/Header'
-import EventCard from '../components/Events/EventCard'
+import Header from '../Components/layout/Header'
+import EventCard from '../Components/Events/EventCard'
 
 const EventsPage = () => {
   return (

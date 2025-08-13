@@ -243,5 +243,33 @@ router.put(
     }
   })
 );
+// Update User Addresses
+
+router.put("/update-user-addresses",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
+  try {
+    const user = await User.findById(req.user.id);
+    const sameTypeAddress = user.addresses.find((address) => address.addressType === req.body.addressType);
+    if(sameTypeAddress){
+      return next(new ErrorHandler(`${req.body.addressType} address already exists`, 400));
+    }
+    const existsAddress = user.addresses.find((address) => address.id === req.body.id);
+    if(!existsAddress){
+      Object.assign(existsAddress, req.body);
+    }
+    else{
+      // add new address
+      user.addresses.push(req.body);
+    }
+    await user.save();
+    res.status(200).json({
+      success: true,
+      user
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+    
+  }
+}))
+
 
 module.exports = router;

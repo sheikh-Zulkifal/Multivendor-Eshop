@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../components/layout/Header";
+import Header from "../Components/layout/Header.jsx"
 import styles from "../styles/styles";
 import ProfileSidebar from "../Components/Profile/ProfileSidebar.jsx";
 import ProfileContent from "../Components/Profile/ProfileContent.jsx";
