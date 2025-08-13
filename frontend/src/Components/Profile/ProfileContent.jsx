@@ -15,12 +15,12 @@ import { RxCross1 } from "react-icons/rx";
 import { Country, State } from "country-state-city";
 import getImageUrl from "../../utils/getImageUrl";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUserInformation } from "../../redux/actions/user";
+import { updateUserAddress, updateUserInformation } from "../../redux/actions/user";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const ProfileContent = ({ active }) => {
-  const { user, error } = useSelector((state) => state.user);
+  const { user, error,updateAddressSuccessMessage } = useSelector((state) => state.user);
   console.log(user.avatar);
 
   const [name, setName] = useState(user && user.name);
@@ -33,8 +33,13 @@ const ProfileContent = ({ active }) => {
   useEffect(() => {
     if (error) {
       toast.error(error);
+      dispatch({type: "clearErrors"});
     }
-  }, [error]);
+    if(updateAddressSuccessMessage){
+      toast.success(updateAddressSuccessMessage.updateAddressSuccessMessage);
+      dispatch({type: "clearSuccessMessages"});
+    }
+  }, [error,updateAddressSuccessMessage]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -492,6 +497,7 @@ const Address = () => {
   const [address2, setAddress2] = useState("");
   const [addressType, setAddressType] = useState("");
   const { user } = useSelector((state) => state.user);
+  const dispatch = useDispatch()
 
   const addressTypeData = [
     {
@@ -510,6 +516,14 @@ const Address = () => {
     if (addressType === "" || country === "" || city === "") {
       toast.error("Please fill all the fields!");
     } else {
+      dispatch(updateUserAddress(country, city, zipCode, address1, address2, addressType));
+      setOpen(false);
+      setCountry("");
+      setCity("");
+      setZipCode(null);
+      setAddress1("");
+      setAddress2("");
+      setAddressType("");
     }
   };
   return (

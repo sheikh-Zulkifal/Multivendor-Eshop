@@ -245,31 +245,46 @@ router.put(
 );
 // Update User Addresses
 
-router.put("/update-user-addresses",isAuthenticated,catchAsyncErrors(async(req,res,next)=>{
-  try {
-    const user = await User.findById(req.user.id);
-    const sameTypeAddress = user.addresses.find((address) => address.addressType === req.body.addressType);
-    if(sameTypeAddress){
-      return next(new ErrorHandler(`${req.body.addressType} address already exists`, 400));
+router.put("/update-user-addresses", isAuthenticated, catchAsyncErrors(async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return next(new ErrorHandler("User not found", 404));
+        }
+
+        // Check for same type address
+        const sameTypeAddress = user.addresses?.find(
+            (address) => address.addressType === req.body.addressType
+        );
+
+        if (sameTypeAddress) {
+            return next(new ErrorHandler(`${req.body.addressType} address already exists`, 400));
+        }
+
+        // Find existing address by id
+        const existsAddress = user.addresses?.find(
+            (address) => address.id === req.body.id
+        );
+
+        if (existsAddress) {
+            Object.assign(existsAddress, req.body); // update
+        } else {
+            user.addresses.push(req.body); // add new
+        }
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            user
+        });
+
+    } catch (error) {
+        return next(new ErrorHandler(error.message, 500));
     }
-    const existsAddress = user.addresses.find((address) => address.id === req.body.id);
-    if(!existsAddress){
-      Object.assign(existsAddress, req.body);
-    }
-    else{
-      // add new address
-      user.addresses.push(req.body);
-    }
-    await user.save();
-    res.status(200).json({
-      success: true,
-      user
-    });
-  } catch (error) {
-    return next(new ErrorHandler(error.message, 500));
-    // a
-  }
-}))
+}));
+
 
 
 module.exports = router;
