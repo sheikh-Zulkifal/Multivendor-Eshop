@@ -15,13 +15,13 @@ import { RxCross1 } from "react-icons/rx";
 import { Country, State } from "country-state-city";
 import getImageUrl from "../../utils/getImageUrl";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUserAddress, updateUserInformation } from "../../redux/actions/user";
+import { deleteUserAddress, updateUserAddress, updateUserInformation } from "../../redux/actions/user";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const ProfileContent = ({ active }) => {
-  const { user, error,updateAddressSuccessMessage } = useSelector((state) => state.user);
-  console.log(user.avatar);
+  const { user, error,successMessage } = useSelector((state) => state.user);
+  // console.log(user.avatar);
 
   const [name, setName] = useState(user && user.name);
   const [email, setEmail] = useState(user && user.email);
@@ -35,11 +35,11 @@ const ProfileContent = ({ active }) => {
       toast.error(error);
       dispatch({type: "clearErrors"});
     }
-    if(updateAddressSuccessMessage){
-      toast.success(updateAddressSuccessMessage.updateAddressSuccessMessage);
+    if(successMessage){
+      toast.success(successMessage);
       dispatch({type: "clearSuccessMessages"});
     }
-  }, [error,updateAddressSuccessMessage]);
+  }, [error,successMessage]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -526,6 +526,10 @@ const Address = () => {
       setAddressType("");
     }
   };
+  const handleDeleteAddress=(item)=>{
+    dispatch(deleteUserAddress(item._id));
+  }
+
   return (
     <div className="w-full px-5">
       {open && (
@@ -675,20 +679,23 @@ const Address = () => {
         </div>
       </div>
       <br />
-      <div className="w-full bg-white h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10">
+      {user && user.addresses.map((item, index)=>(
+        <div className="w-full bg-white h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10"
+        key={index}>
         <div className="flex items-center">
-          <h5 className="pl-5 font-[600] "> Default </h5>
+          <h5 className="pl-5 font-[600] "> {item.addressType} </h5>
         </div>
         <div className="pl-8 flex items-center">
-          <h6>521 D Block ShadBagh Lahore</h6>
+          <h6>{item.address1} + {item.address2}</h6>
         </div>
-        <div className="pl-8 flex items-center">
-          <h6>923134029659</h6>
+        <div className="pl-8 flex items-center ">
+          <h6>{user && user.phoneNumber}</h6>
         </div>
         <div className="min-w-[10%] flex items-center justify-between pl-8">
-          <AiOutlineDelete size={25} className="cursor-pointer" />
+          <AiOutlineDelete size={25} className="cursor-pointer" onClick={() => handleDeleteAddress(item)} />
         </div>
       </div>
+      ))}
     </div>
   );
 };

@@ -93,13 +93,40 @@ export const updateUserAddress =
       dispatch({
         type: "UpdateUserAddressSuccess",
         payload: {
-          updateAddressSuccessMessage: "User address updated Successfully!",
+          successMessage: "User address updated Successfully!",
           user: data.user,
         },
       });
     } catch (error) {
       dispatch({
         type: "UpdateUserAddressFail",
+        payload: error.response?.data?.message || error.message,
+      });
+    }
+  };
+
+  // Delete User Address
+
+  export const deleteUserAddress = (id) => async(dispatch)=>{
+    try {
+      dispatch({
+        type: "DeleteUserAddressRequest",
+      });
+      const { data } = await axios.delete(
+        `${server}/user/delete-user-address/${id}`,
+        { withCredentials: true }
+      );
+      dispatch({
+        type: "DeleteUserAddressSuccess",
+        payload: {
+          successMessage: "User address deleted Successfully!",
+          user: data.user,
+        },
+      });
+      
+    }  catch (error) {
+      dispatch({
+        type: "DeleteUserAddressFail",
         payload: error.response?.data?.message || error.message,
       });
     }
