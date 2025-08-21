@@ -13,6 +13,7 @@ import ProductDetailsPage from "../pages/ProductDetailsPage.jsx";
 import ProfilePage from "../pages/ProfilePage.jsx";
 import ShopCreatePage from "../pages/ShopCreatePage.jsx";
 import ShopLoginPage from "../pages/ShopLoginPage.jsx";
+import PaymentPage from "../pages/PaymentPage.jsx";
 
 export {
   LoginPage,
@@ -25,6 +26,7 @@ export {
   EventsPage,
   FAQPage,  
   CheckoutPage,
+  PaymentPage,
   OrderSuccessPage,
   ProductDetailsPage,
   ProfilePage,

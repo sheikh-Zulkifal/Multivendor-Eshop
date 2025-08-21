@@ -10,6 +10,7 @@ import {
   EventsPage,
   FAQPage,
   CheckoutPage,
+  PaymentPage,
   OrderSuccessPage,
   ProductDetailsPage,
   ProfilePage,
@@ -63,9 +64,12 @@ function App() {
         <Route path="/best-selling" element={<BestSellingPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        {/* <Route path="/checkout" element={<ProtectedRoute>
+        <Route path="/checkout" element={<ProtectedRoute>
           <CheckoutPage />
-          </ProtectedRoute>} /> */}
+          </ProtectedRoute>} />
+          <Route path="/payment" element={<ProtectedRoute>
+          <PaymentPage  />
+          </ProtectedRoute>} />
         <Route path="/order/success/:id" element={<OrderSuccessPage />} />
         <Route
           path="/profile"
