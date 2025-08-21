@@ -95,7 +95,7 @@ const ProfileSidebar = ({ active, setActive }) => {
         </span>
       </div>
 
-      <div
+      {/* <div
         className="flex items-center cursor-pointer w-full mb-8"
         onClick={() => setActive(6)}
       >
@@ -105,8 +105,8 @@ const ProfileSidebar = ({ active, setActive }) => {
         >
           Payment Methods
         </span>
-      </div>
-      {/* <div
+      </div> */}
+      <div
         className="flex items-center cursor-pointer w-full mb-8"
         onClick={() => setActive(6)}
       >
@@ -118,7 +118,7 @@ const ProfileSidebar = ({ active, setActive }) => {
         >
           Change Password
         </span>
-      </div> */}
+      </div>
 
       <div
         className="flex items-center cursor-pointer w-full mb-8"

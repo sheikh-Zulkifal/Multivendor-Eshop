@@ -245,68 +245,114 @@ router.put(
 );
 // Update User Addresses
 
-router.put("/update-user-addresses", isAuthenticated, catchAsyncErrors(async (req, res, next) => {
+router.put(
+  "/update-user-addresses",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
     try {
-        const user = await User.findById(req.user.id);
+      const user = await User.findById(req.user.id);
 
-        if (!user) {
-            return next(new ErrorHandler("User not found", 404));
-        }
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
 
-        // Check for same type address
-        const sameTypeAddress = user.addresses?.find(
-            (address) => address.addressType === req.body.addressType
+      // Check for same type address
+      const sameTypeAddress = user.addresses?.find(
+        (address) => address.addressType === req.body.addressType
+      );
+
+      if (sameTypeAddress) {
+        return next(
+          new ErrorHandler(
+            `${req.body.addressType} address already exists`,
+            400
+          )
         );
+      }
 
-        if (sameTypeAddress) {
-            return next(new ErrorHandler(`${req.body.addressType} address already exists`, 400));
-        }
+      // Find existing address by id
+      const existsAddress = user.addresses?.find(
+        (address) => address.id === req.body.id
+      );
 
-        // Find existing address by id
-        const existsAddress = user.addresses?.find(
-            (address) => address.id === req.body.id
-        );
+      if (existsAddress) {
+        Object.assign(existsAddress, req.body); // update
+      } else {
+        user.addresses.push(req.body); // add new
+      }
 
-        if (existsAddress) {
-            Object.assign(existsAddress, req.body); // update
-        } else {
-            user.addresses.push(req.body); // add new
-        }
+      await user.save();
 
-        await user.save();
-
-        res.status(200).json({
-            success: true,
-            user
-        });
-
+      res.status(200).json({
+        success: true,
+        user,
+      });
     } catch (error) {
-        return next(new ErrorHandler(error.message, 500));
+      return next(new ErrorHandler(error.message, 500));
     }
-}));
+  })
+);
 
 // Delete User Address
-router.delete("/delete-user-address/:id", isAuthenticated, catchAsyncErrors(async (req, res, next) => {
+router.delete(
+  "/delete-user-address/:id",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
     try {
-        const userId = req.user.id;
-        const addressId = req.params.id;
+      const userId = req.user.id;
+      const addressId = req.params.id;
 
-        await User.updateOne({
-            _id: userId,
-        }, {$pull:{addresses:{_id:addressId}}})
+      await User.updateOne(
+        {
+          _id: userId,
+        },
+        { $pull: { addresses: { _id: addressId } } }
+      );
 
-        const user = await User.findById(userId);
+      const user = await User.findById(userId);
 
+      res.status(200).json({
+        success: true,
+        message: "Address deleted successfully",
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
-        res.status(200).json({
-            success: true,
-            message: "Address deleted successfully",
-            user
-        });
+// Update user password
+
+router.put(
+  "/update-user-password",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user.id).select("+password");
+      const isPasswordMatched = await user.comparePassword(
+        req.body.oldPassword
+      );
+      if (!isPasswordMatched) {
+        return next(new ErrorHandler("Old Password is Incorrect!", 400));
+      }
+      if (req.body.newPassword !== req.body.confirmPassword) {
+        return next(
+          new ErrorHandler("Passwords doesn't matched with each other", 400)
+        );
+      }
+
+      user.password=req.body.newPassword;
+      await user.save();
+      res.status(200).json({
+        success: true,
+        message: "Password updated successfully",
+      });
 
     } catch (error) {
-        return next(new ErrorHandler(error.message, 500));
+      return next(new ErrorHandler(error.message, 500));
     }
-}));
+  })
+);
 
 module.exports = router;
