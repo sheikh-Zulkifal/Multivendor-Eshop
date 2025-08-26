@@ -8,7 +8,6 @@ const Order = require("../model/order");
 
 router.post(
   "/create-order",
-  isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { cart, shippingAddress, user, totalPrice, paymentInfo } = req.body;
@@ -26,7 +25,6 @@ router.post(
       for (const [shopId, items] of shopItemsMap) {
         const order = await Order.create({
           cart: items,
-          cart,
           shippingAddress,
           user,
           totalPrice,
@@ -44,3 +42,4 @@ router.post(
     }
   })
 );
+module.exports = router;
