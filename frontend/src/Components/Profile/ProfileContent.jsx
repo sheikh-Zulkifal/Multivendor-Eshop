@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteUserAddress, updateUserAddress, updateUserInformation } from "../../redux/actions/user";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { getAllOrdersUser } from "../../redux/actions/order";
 
 const ProfileContent = ({ active }) => {
   const { user, error,successMessage } = useSelector((state) => state.user);
@@ -190,18 +191,13 @@ const ProfileContent = ({ active }) => {
 };
 
 const AllOrders = () => {
-  const orders = [
-    {
-      _id: " 9876567998765689765689",
-      orderItems: [
-        {
-          name: "Iphone 14 Pro Max",
-        },
-      ],
-      totalPrice: 1200,
-      orderStatus: "Delivered",
-    },
-  ];
+  const { orders } = useSelector((state) => state.order);
+  const {user} = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllOrdersUser(user._id));
+  }, []);
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
@@ -258,11 +254,12 @@ const AllOrders = () => {
     orders.forEach((item) => {
       row.push({
         id: item._id,
-        itemsQty: item.orderItems.length,
+        itemsQty: item.cart.length,
         total: "US$ " + item.totalPrice,
-        status: item.orderStatus,
+        status: item.status,
       });
     });
+
 
   return (
     <div className="pl-8 pt-1">
