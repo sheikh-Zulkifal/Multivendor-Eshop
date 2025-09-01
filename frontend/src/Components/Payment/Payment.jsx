@@ -114,6 +114,7 @@ const Payment = () => {
 
       const client_secret = data.clientSecret;
 
+
       if (!stripe || !elements) return;
       const result = await stripe.confirmCardPayment(client_secret, {
         payment_method: {
@@ -235,7 +236,7 @@ const PaymentInfo = ({
                     required
                     placeholder={user && user.name}
                     className={`${styles.input} !w-[95%] text-[#444]`}
-                    value={user && user.name}
+                    defaultValue={user?.name}
                   />
                 </div>
                 <div className="w-[50%]">

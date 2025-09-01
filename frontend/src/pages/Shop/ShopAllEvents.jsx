@@ -1,7 +1,7 @@
 import React from 'react'
 import DashboardHeader from '../../Components/Shop/Layout/DashboardHeader'
 import DashboardSideBar from '../../Components/Shop/Layout/DashboardSideBar'
-import AllEvents from "../../Components/Shop/Layout/AllEvents.jsx"
+import AllEvents from "../../Components/Shop/AllEvents.jsx"
 
 const ShopAllEvents = () => {
   return (

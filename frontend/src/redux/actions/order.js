@@ -24,3 +24,27 @@ export const getAllOrdersUser = (userId) => async (dispatch) => {
     });
   }
 };
+// get all orders of shop
+
+export const getAllOrdersOfShop = (shopId)=>async(dispatch)=>{
+  try {
+    dispatch({
+      type: "getAllOrdersShopRequest",
+    });
+
+    const { data } = await axios.get(
+      `${server}/order/get-seller-all-orders/${shopId}`,
+      { withCredentials: true }
+    );
+
+    dispatch({
+      type: "getAllOrdersShopSuccess",
+      payload: data.orders,
+    });
+  } catch (error) {
+    dispatch({
+      type: "getAllOrdersShopFailed",
+      payload: error.response.data.message,
+    });
+  }
+};

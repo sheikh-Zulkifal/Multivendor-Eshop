@@ -1,29 +1,27 @@
+
 import React, { useEffect } from "react";
+import {Button} from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 import { AiOutlineDelete, AiOutlineEye } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import Loader from "../../layout/Loader";
-import { Button } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import {
-  deleteProduct,
-  getAllProductsShop,
-} from "../../../redux/actions/product";
+import Loader from "../layout/Loader.jsx";
+import { deleteEvent, getAllEventsShop } from "../../redux/actions/event";
 
-const AllProducts = () => {
-  const { products, isLoading } = useSelector((state) => state.products);
+const AllEvents = () => {
+  const { events, isLoading } = useSelector((state) => state.events);
   const { seller } = useSelector((state) => state.seller);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllProductsShop(seller._id));
+    dispatch(getAllEventsShop(seller._id));
   }, [dispatch]);
 
   const handleDelete = (id) => {
-    dispatch(deleteProduct(id));
+    dispatch(deleteEvent(id));
     window.location.reload();
-  };
+  }
 
   const columns = [
     { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },
@@ -62,11 +60,11 @@ const AllProducts = () => {
       type: "number",
       sortable: false,
       renderCell: (params) => {
-        const d = params.row.id;
-        const product_name = params.row.name.replace(/\s+/g, "-");
+        const d = params.row.name;
+        const product_name = d.replace(/\s+/g, "-");
         return (
           <>
-            <Link to={`/product/${params.id}`}>
+            <Link to={`/product/${product_name}`}>
               <Button>
                 <AiOutlineEye size={20} />
               </Button>
@@ -85,7 +83,9 @@ const AllProducts = () => {
       renderCell: (params) => {
         return (
           <>
-            <Button onClick={() => handleDelete(params.id)}>
+            <Button
+            onClick={() => handleDelete(params.id)}
+            >
               <AiOutlineDelete size={20} />
             </Button>
           </>
@@ -96,14 +96,14 @@ const AllProducts = () => {
 
   const row = [];
 
-  products &&
-    products.forEach((item) => {
+  events &&
+  events.forEach((item) => {
       row.push({
         id: item._id,
         name: item.name,
         price: "US$ " + item.discountPrice,
         Stock: item.stock,
-        sold: item?.sold_out,
+        sold: item.sold_out,
       });
     });
 
@@ -126,4 +126,4 @@ const AllProducts = () => {
   );
 };
 
-export default AllProducts;
+export default AllEvents;

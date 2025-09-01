@@ -1,7 +1,7 @@
 import React from 'react'
 import DashboardSideBar from '../../Components/Shop/Layout/DashboardSideBar'
 import DashboardHeader from '../../Components/Shop/Layout/DashboardHeader'
-import AllCoupouns from "../../Components/Shop/Layout/AllCoupouns.jsx"
+import AllCoupouns from "../../Components/Shop/AllCoupouns.jsx"
 
 const ShopAllCoupouns = () => {
   return (

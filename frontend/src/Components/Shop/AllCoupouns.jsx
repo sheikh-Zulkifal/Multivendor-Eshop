@@ -3,13 +3,12 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { RxCross1 } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
-
 import { toast } from "react-toastify";
-import { server } from "../../../server";
 import { Button } from "@mui/material";
-import Loader from "../../layout/Loader";
 import { DataGrid } from "@mui/x-data-grid";
-import styles from "../../../styles/styles";
+import { server } from "../../server.js";
+import Loader from "../layout/Loader.jsx";
+import styles from "../../styles/styles.js";
 
 const AllCoupons = () => {
   const [open, setOpen] = useState(false);

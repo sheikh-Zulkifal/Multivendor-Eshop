@@ -1,22 +1,23 @@
 import React from 'react'
-import DashboardSideBar from '../../Components/Shop/Layout/DashboardSideBar'
 import DashboardHeader from '../../Components/Shop/Layout/DashboardHeader'
-import AllProducts from "../../Components/Shop/AllProducts.jsx"
+import DashboardSideBar from '../../Components/Shop/Layout/DashboardSideBar'
+import AllOrders from "../../Components/Shop/AllOrders.jsx"
 
-const ShopAllProducts = () => {
+
+const ShopAllOrders = () => {
   return (
-    <div>
+   <div>
       <DashboardHeader />
       <div className="flex justify-between w-full">
         <div className="w-[80px] md:w-[330px]  ">
-          <DashboardSideBar active={3} />
+          <DashboardSideBar active={2} />
         </div>
         <div className="w-full justify-center flex">
-          <AllProducts/>
+          <AllOrders/>
         </div>
       </div>
     </div>
   )
 }
 
-export default ShopAllProducts
+export default ShopAllOrders
