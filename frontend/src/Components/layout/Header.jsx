@@ -16,11 +16,12 @@ import { useSelector } from "react-redux";
 import { backend_url } from "../../server.js";
 import getImageUrl from "../../utils/getImageUrl.js";
 import Cart from "../Cart/Cart.jsx";
-import Wishlist from "../Wishlist/Wishlist.jsx"
+import Wishlist from "../Wishlist/Wishlist.jsx";
 import { RxCross1 } from "react-icons/rx";
 
 const Header = ({ activeHeading }) => {
   const { isAuthenticated, user, loading } = useSelector((state) => state.user);
+  const { isSeller } = useSelector((state) => state.seller);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
   const [active, setActive] = useState(false);
@@ -99,8 +100,6 @@ const Header = ({ activeHeading }) => {
             {showDropdown && searchData && searchData.length !== 0 && (
               <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
                 {searchData.map((product, index) => {
-
-                   
                   return (
                     <Link
                       to={`/product/${product._id}`}
@@ -127,7 +126,7 @@ const Header = ({ activeHeading }) => {
           <div className={`${styles.button}`}>
             <Link to="/shop-create">
               <h1 className="text-[#fff] flex items-center">
-                Become Seller
+                {isSeller ? " Dashboard" : "Become Seller"}
                 <IoIosArrowForward className="ml-1" />
               </h1>
             </Link>
@@ -190,7 +189,7 @@ const Header = ({ activeHeading }) => {
                   color="rgb(255 255 255 / 83%)"
                 />
                 <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
-                   {cart && cart.length}
+                  {cart && cart.length}
                 </span>
               </div>
             </div>
@@ -298,7 +297,6 @@ const Header = ({ activeHeading }) => {
                 {searchData && (
                   <div className="absolute bg-[#fff] z-10 shadow w-full left-0 p-3">
                     {searchData.map((i) => {
-                     
                       return (
                         <Link to={`/product/${i._id}`}>
                           <div className="flex items-center">
