@@ -3,29 +3,49 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { BsFillBagFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { getAllOrdersOfShop } from "../../redux/actions/order";
 import getImageUrl from "../../utils/getImageUrl";
 import styles from "../../styles/styles";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { server } from "../../server";
 
 const OrderDetails = () => {
-      const { orders, isLoading } = useSelector((state) => state.order);
-        const { seller } = useSelector((state) => state.seller);
-      
-      const dispatch = useDispatch();
-      const [status, setStatus] =useState("");
-        const {id} =useParams()
-        useEffect(() => {
-          dispatch(getAllOrdersOfShop(seller._id))
-        }, [])
-        const data = orders && orders.find((item) => item._id === id);
-        
- const orderUpdateHandler = (e)=>{
-    e.preventDefault()
- }
- const refundOrderUpdateHandler = (e)=>{
-    e.preventDefault()
-  }
+  const { orders, isLoading } = useSelector((state) => state.order);
+  const { seller } = useSelector((state) => state.seller);
+
+  const dispatch = useDispatch();
+  const [status, setStatus] = useState("");
+  const { id } = useParams();
+  useEffect(() => {
+    dispatch(getAllOrdersOfShop(seller._id));
+  }, []);
+  const data = orders && orders.find((item) => item._id === id);
+  const navigate = useNavigate();
+
+  const orderUpdateHandler = async (e) => {
+    axios
+      .put(
+        `${server}/order/update-order-status/${id}`,
+        {
+          status,
+        },
+        {
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        toast.success("Order Updated Successfully!");
+        navigate("/dashboard-orders");
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+  };
+  const refundOrderUpdateHandler = (e) => {
+    e.preventDefault();
+  };
   return (
     <div className={`py-4 min-h-screen ${styles.section}`}>
       <div className="w-full flex items-center justify-between">
@@ -57,14 +77,13 @@ const OrderDetails = () => {
       {data &&
         data?.cart.map((item, index) => (
           <div className="w-full flex items-start mb-5">
-            <img 
+            <img
               src={getImageUrl(item?.images[0])}
               alt=""
               className="w-[80x] h-[80px]"
             />
-            
-            <div className="w-full">
 
+            <div className="w-full">
               <h5 className="pl-3 text-[20px]">{item.name}</h5>
               <h5 className="pl-3 text-[20px] text-[#00000091]">
                 US${item.discountPrice} x {item.qty}

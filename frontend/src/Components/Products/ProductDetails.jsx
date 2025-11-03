@@ -266,9 +266,23 @@ const ProductDetailsInfo = ({ data, products }) => {
         </>
       ) : null}
       {active === 2 ? (
-        <div className="w-full min-h-[40vh] flex justify-center items-center">
-          {/* flex-col  py-3 overflow-y-scroll */}
-          <p>No reviews yet!</p>
+        <div className="w-full min-h-[40vh] flex  flex-col justify-center items-center">
+          {/*  py-3 overflow-y-scroll */}
+          {data && data.reviews.map((item, index)=>(
+            <div className="w-full flex my-2">
+              <img src={getImageUrl(item && item?.user.avatar)} alt="" className="w-[50px] h-[50px] rounded-full" />
+              <div className="pl-2 ">
+                <h1 className="font-[500]">{item.user.name}</h1>
+                <p>{item.comment}</p>
+              </div>
+            </div>
+          ))}
+         <div className="w-full flex justify-center">
+           {data && data.reviews.length === 0 && (
+            <h5>No reviews have for this Product!</h5>
+          )}
+         </div>
+          
         </div>
       ) : null}
       {active === 3 && (

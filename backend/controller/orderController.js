@@ -94,10 +94,17 @@ router.put(
       if (!order) {
         return next(new ErrorHandler("Order not found with this ID", 404));
       }
-      if (req.body.status == "Transfer to delivery partner") {
-        order.cart.forEach(async (o) => {
+      async function updateProductStock(id, qty) {
+        const product = await Product.findById(id);
+
+        product.stock -= qty;
+        product.sold_out += qty;
+        await product.save({ validateBeforeSave: false });
+      }
+      if (req.body.status == "Transferred to delivery partner") {
+        for (const o of order.cart) {
           await updateProductStock(o._id, o.qty);
-        });
+        }
       }
 
       // update status
@@ -112,13 +119,6 @@ router.put(
         success: true,
         order,
       });
-      async function updateProductStock(id, qty) {
-        const product = await Product.findById(id);
-
-        product.stock -= qty;
-        product.sold_out += qty;
-        await product.save({ validateBeforeSave: false });
-      }
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
