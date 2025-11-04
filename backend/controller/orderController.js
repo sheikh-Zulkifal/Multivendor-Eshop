@@ -125,4 +125,71 @@ router.put(
   })
 );
 
+// give a refund
+router.put(
+  "/order-refund/:id",
+ 
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const order = await Order.findById(req.params.id);
+      if (!order) {
+        return next(new ErrorHandler("Order not found with this ID", 404));
+      }
+      order.status = req.body.status;
+
+     
+      await order.save({ validateBeforeSave: false });
+      res.status(200).json({
+        success: true,
+        order,
+        message: "Refund request sent successfully",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// accept refund request by seller
+
+router.put(
+  "/order-refund-success/:id",
+  isSeller,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const order = await Order.findById(req.params.id);
+
+      if (!order) {
+        return next(new ErrorHandler("Order not found with this id", 400));
+      }
+
+      async function updateOrder(id, qty) {
+        const product = await Product.findById(id);
+
+        product.stock += qty;
+        product.sold_out -= qty;
+
+        await product.save({ validateBeforeSave: false });
+      }
+
+      if (req.body.status === "Refund Success") {
+        for (const o of order.cart) {
+          await updateOrder(o._id, o.qty);
+        }
+      }
+
+      order.status = req.body.status;
+
+      await order.save();
+
+      res.status(200).json({
+        success: true,
+        message: "Order Refund successfull!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 module.exports = router;

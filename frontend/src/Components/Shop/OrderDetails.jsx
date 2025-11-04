@@ -43,9 +43,23 @@ const OrderDetails = () => {
         toast.error(error.response.data.message);
       });
   };
-  const refundOrderUpdateHandler = (e) => {
-    e.preventDefault();
-  };
+   const refundOrderUpdateHandler = async (e) => {
+    await axios
+    .put(
+      `${server}/order/order-refund-success/${id}`,
+      {
+        status,
+      },
+      { withCredentials: true }
+    )
+    .then((res) => {
+      toast.success("Order updated!");
+      dispatch(getAllOrdersOfShop(seller._id));
+    })
+    .catch((error) => {
+      toast.error(error.response.data.message);
+    });
+  }
   return (
     <div className={`py-4 min-h-screen ${styles.section}`}>
       <div className="w-full flex items-center justify-between">
@@ -122,7 +136,7 @@ const OrderDetails = () => {
       <br />
       <br />
       <h4 className="pt-3 text-[20px] font-[600]">Order Status:</h4>
-      {data?.status !== "Processing refund" &&
+      {data?.status !== "Processing Refund" &&
         data?.status !== "Refund Success" && (
           <select
             value={status}
@@ -154,7 +168,7 @@ const OrderDetails = () => {
               ))}
           </select>
         )}
-      {data?.status === "Processing refund" ||
+      {data?.status === "Processing Refund" ||
       data?.status === "Refund Success" ? (
         <select
           value={status}

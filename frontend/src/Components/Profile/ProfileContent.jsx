@@ -15,13 +15,17 @@ import { RxCross1 } from "react-icons/rx";
 import { Country, State } from "country-state-city";
 import getImageUrl from "../../utils/getImageUrl";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteUserAddress, updateUserAddress, updateUserInformation } from "../../redux/actions/user";
+import {
+  deleteUserAddress,
+  updateUserAddress,
+  updateUserInformation,
+} from "../../redux/actions/user";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { getAllOrdersUser } from "../../redux/actions/order";
 
 const ProfileContent = ({ active }) => {
-  const { user, error,successMessage } = useSelector((state) => state.user);
+  const { user, error, successMessage } = useSelector((state) => state.user);
   // console.log(user.avatar);
 
   const [name, setName] = useState(user && user.name);
@@ -34,13 +38,13 @@ const ProfileContent = ({ active }) => {
   useEffect(() => {
     if (error) {
       toast.error(error);
-      dispatch({type: "clearErrors"});
+      dispatch({ type: "clearErrors" });
     }
-    if(successMessage){
+    if (successMessage) {
       toast.success(successMessage);
-      dispatch({type: "clearSuccessMessages"});
+      dispatch({ type: "clearSuccessMessages" });
     }
-  }, [error,successMessage]);
+  }, [error, successMessage]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -192,7 +196,7 @@ const ProfileContent = ({ active }) => {
 
 const AllOrders = () => {
   const { orders } = useSelector((state) => state.order);
-  const {user} = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -260,7 +264,6 @@ const AllOrders = () => {
       });
     });
 
-
   return (
     <div className="pl-8 pt-1">
       <DataGrid
@@ -275,21 +278,16 @@ const AllOrders = () => {
 };
 
 const AllRefundOrders = () => {
-  const orders = [
-    {
-      _id: " 9876567998765689765689",
-      orderItems: [
-        {
-          name: "Iphone 14 Pro Max",
-        },
-      ],
-      totalPrice: 1200,
-      orderStatus: "Delivered",
-    },
-  ];
+  const { orders } = useSelector((state) => state.order);
+  const { user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllOrdersUser(user._id));
+  }, []);
 
   const eligibleOrders =
-    orders && orders.filter((item) => item.status === "Processing refund");
+    orders && orders.filter((item) => item.status === "Processing Refund");
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
@@ -342,13 +340,13 @@ const AllRefundOrders = () => {
 
   const row = [];
 
-  orders &&
-    orders.forEach((item) => {
+  eligibleOrders &&
+    eligibleOrders.forEach((item) => {
       row.push({
         id: item._id,
-        itemsQty: item.orderItems.length,
+        itemsQty: item.cart.length,
         total: "US$ " + item.totalPrice,
-        status: item.orderStatus,
+        status: item.status,
       });
     });
 
@@ -366,18 +364,13 @@ const AllRefundOrders = () => {
 };
 
 const TrackOrder = () => {
-  const orders = [
-    {
-      _id: " 9876567998765689765689",
-      orderItems: [
-        {
-          name: "Iphone 14 Pro Max",
-        },
-      ],
-      totalPrice: 1200,
-      orderStatus: "Delivered",
-    },
-  ];
+   const { orders } = useSelector((state) => state.order);
+  const { user } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllOrdersUser(user._id));
+  }, []);
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
@@ -434,11 +427,12 @@ const TrackOrder = () => {
     orders.forEach((item) => {
       row.push({
         id: item._id,
-        itemsQty: item.orderItems.length,
+        itemsQty: item.cart.length,
         total: "US$ " + item.totalPrice,
-        status: item.orderStatus,
+        status: item.status,
       });
     });
+
 
   return (
     <div className="pl-8 pt-1">
@@ -494,7 +488,7 @@ const Address = () => {
   const [address2, setAddress2] = useState("");
   const [addressType, setAddressType] = useState("");
   const { user } = useSelector((state) => state.user);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const addressTypeData = [
     {
@@ -513,7 +507,16 @@ const Address = () => {
     if (addressType === "" || country === "" || city === "") {
       toast.error("Please fill all the fields!");
     } else {
-      dispatch(updateUserAddress(country, city, zipCode, address1, address2, addressType));
+      dispatch(
+        updateUserAddress(
+          country,
+          city,
+          zipCode,
+          address1,
+          address2,
+          addressType
+        )
+      );
       setOpen(false);
       setCountry("");
       setCity("");
@@ -523,9 +526,9 @@ const Address = () => {
       setAddressType("");
     }
   };
-  const handleDeleteAddress=(item)=>{
+  const handleDeleteAddress = (item) => {
     dispatch(deleteUserAddress(item._id));
-  }
+  };
 
   return (
     <div className="w-full px-5">
@@ -545,7 +548,6 @@ const Address = () => {
             <div className="w-full">
               <form aria-required onSubmit={handleSubmit}>
                 <div className="w-full block p-4">
-                   
                   <div className="w-full pb-2">
                     <label className="block pb-2">Country</label>
                     <select
@@ -594,7 +596,8 @@ const Address = () => {
                           </option>
                         ))}
                     </select>
-                  </div><div className="w-full pb-2">
+                  </div>
+                  <div className="w-full pb-2">
                     <label className="block pb-2">Address 1</label>
                     <input
                       type="address"
@@ -669,40 +672,51 @@ const Address = () => {
         <h1 className="pb-2 text-[25px] font-[600] text-[#000000ba] ">
           My Addresses
         </h1>
-        <div className={`${styles.button} !rounded-md`} onClick={() => setOpen(true)}>
-          <span className="text-white ">
-            Add New
-          </span>
+        <div
+          className={`${styles.button} !rounded-md`}
+          onClick={() => setOpen(true)}
+        >
+          <span className="text-white ">Add New</span>
         </div>
       </div>
       <br />
-      {user && user.addresses.map((item, index)=>(
-        <div className="w-full bg-white h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10"
-        key={index}>
-        <div className="flex items-center">
-          <h5 className="pl-5 font-[600] "> {item.addressType} </h5>
-        </div>
-        <div className="pl-8 flex items-center">
-          <h6>{item.address1}  {item.address2}</h6>
-        </div>
-        <div className="pl-8 flex items-center ">
-          <h6>{user && user.phoneNumber}</h6>
-        </div>
-        <div className="min-w-[10%] flex items-center justify-between pl-8">
-          <AiOutlineDelete size={25} className="cursor-pointer" onClick={() => handleDeleteAddress(item)} />
-        </div>
-      </div>
-      ))}
+      {user &&
+        user.addresses.map((item, index) => (
+          <div
+            className="w-full bg-white h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10"
+            key={index}
+          >
+            <div className="flex items-center">
+              <h5 className="pl-5 font-[600] "> {item.addressType} </h5>
+            </div>
+            <div className="pl-8 flex items-center">
+              <h6>
+                {item.address1} {item.address2}
+              </h6>
+            </div>
+            <div className="pl-8 flex items-center ">
+              <h6>{user && user.phoneNumber}</h6>
+            </div>
+            <div className="min-w-[10%] flex items-center justify-between pl-8">
+              <AiOutlineDelete
+                size={25}
+                className="cursor-pointer"
+                onClick={() => handleDeleteAddress(item)}
+              />
+            </div>
+          </div>
+        ))}
       {user && user.addresses.length === 0 && (
-        <h5 className="text-center pt-8 text-[18px]">You do not have any saved address</h5>
+        <h5 className="text-center pt-8 text-[18px]">
+          You do not have any saved address
+        </h5>
       )}
     </div>
   );
 };
 
-
-//  Change Password 
- const ChangePassword = () => {
+//  Change Password
+const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -780,6 +794,3 @@ const Address = () => {
 };
 
 export default ProfileContent;
-
-
-

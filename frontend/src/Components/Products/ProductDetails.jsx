@@ -12,7 +12,10 @@ import {
 import Ratings from "./Ratings.jsx";
 import { getAllProductsShop } from "../../redux/actions/product";
 import getImageUrl from "../../utils/getImageUrl";
-import { addToWishlist, removeFromWishlist } from "../../redux/actions/wishlist";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "../../redux/actions/wishlist";
 import { addToCart } from "../../redux/actions/cart";
 import { toast } from "react-toastify";
 
@@ -31,12 +34,12 @@ const ProductDetails = ({ data }) => {
     if (data && data.shop && data.shop._id) {
       dispatch(getAllProductsShop(data.shop._id));
     }
-     if(wishlist && wishlist.find((i) => i._id === data._id)) {
-    setClick(true);
-  }else {
-    setClick(false);
-  }
-  }, [dispatch,wishlist]);
+    if (wishlist && wishlist.find((i) => i._id === data._id)) {
+      setClick(true);
+    } else {
+      setClick(false);
+    }
+  }, [dispatch, wishlist]);
 
   const incrementCount = () => {
     setCount(count + 1);
@@ -46,40 +49,53 @@ const ProductDetails = ({ data }) => {
       setCount(count - 1);
     }
   };
-  // const totalRatings =
-  //   products &&
-  //   products.reduce(
-  //     (acc, product) =>
-  //       acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
-  //     0
-  //   );
+  const totalReviewsLength =
+    products &&
+    products.reduce(
+      (acc, product) => acc + product.reviews.length,
+      0
+    );
+  const totalRatings =
+    products &&
+    products.reduce(
+      (acc, product) =>
+        acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
+      0
+    );
+    const averageRating  = totalRatings/totalReviewsLength || 0;
+  const totalReviews =
+    products &&
+    products.reduce(
+      (acc, product) => acc + product.reviews.length,
+      0
+    );
   const handleMessageSubmit = () => {
     navigate("inbox?conservationId=12345");
   };
   const removeFromWishlistHandler = (data) => {
-      setClick(!click);
-      dispatch(removeFromWishlist(data));
-    }; 
-    const addToWishlistHandler = () => {
-      setClick(!click);
-      dispatch(addToWishlist(data));
-    };
-  
+    setClick(!click);
+    dispatch(removeFromWishlist(data));
+  };
+  const addToWishlistHandler = () => {
+    setClick(!click);
+    dispatch(addToWishlist(data));
+  };
+
   const addToCartHandler = (id) => {
-      const isItemExists = cart && cart.find((i) => i._id === id);
-  
-      if (isItemExists) {
-        toast.error("Item already in cart!");
+    const isItemExists = cart && cart.find((i) => i._id === id);
+
+    if (isItemExists) {
+      toast.error("Item already in cart!");
+    } else {
+      if (data.stock < 1) {
+        toast.error("Product stock limited!");
       } else {
-        if (data.stock < 1) {
-          toast.error("Product stock limited!");
-        } else {
-          const cartData = { ...data, qty: 1 };
-          dispatch(addToCart(cartData));
-          toast.success("Item added to cart successfully!");
-        }
+        const cartData = { ...data, qty: 1 };
+        dispatch(addToCart(cartData));
+        toast.success("Item added to cart successfully!");
       }
-    };
+    }
+  };
 
   return (
     <div className="bg-white">
@@ -151,7 +167,7 @@ const ProductDetails = ({ data }) => {
                       <AiFillHeart
                         size={30}
                         className="cursor-pointer"
-                         onClick={() => removeFromWishlistHandler(data)}
+                        onClick={() => removeFromWishlistHandler(data)}
                         color={click ? "red" : "#333"}
                         title="Remove from wishlist"
                       />
@@ -159,7 +175,7 @@ const ProductDetails = ({ data }) => {
                       <AiOutlineHeart
                         size={30}
                         className="cursor-pointer"
-                         onClick={() => addToWishlistHandler(data)}
+                        onClick={() => addToWishlistHandler(data)}
                         color={click ? "red" : "#333"}
                         title="Add to wishlist"
                       />
@@ -177,19 +193,19 @@ const ProductDetails = ({ data }) => {
 
                 <div className="flex items-center pt-8">
                   <Link to={`/shop/preview/${data?.shop._id}`}>
-                  <img
-                    src={getImageUrl(data?.shop?.avatar?.url)}
-                    alt=""
-                    className="w-[50px] h-[50px] rounded-full mr-2"
-                  />
+                    <img
+                      src={getImageUrl(data?.shop?.avatar?.url)}
+                      alt=""
+                      className="w-[50px] h-[50px] rounded-full mr-2"
+                    />
                   </Link>
                   <div className="pr-8">
                     <Link to={`/shop/preview/${data?.shop._id}`}>
-                    <h3 className={`${styles.shop_name} pb-1 pt-1`}>
-                      {data.shop.name}
-                    </h3>
-                     </Link>
-                    <h5 className="pb-3 text-[15px]">(4/5) Ratings</h5>
+                      <h3 className={`${styles.shop_name} pb-1 pt-1`}>
+                        {data.shop.name}
+                      </h3>
+                    </Link>
+                    <h5 className="pb-3 text-[15px]">({averageRating}/5) Ratings</h5>
                   </div>
                   <div
                     className={`${styles.button} bg-[#6443d1] mt-4 !rounded !h-11`}
@@ -203,7 +219,7 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
           </div>
-          <ProductDetailsInfo data={data} products={products} />
+          <ProductDetailsInfo data={data} products={products} totalReviews={totalReviews} averageRating={averageRating} />
           <br />
           <br />
         </div>
@@ -212,7 +228,7 @@ const ProductDetails = ({ data }) => {
   );
 };
 
-const ProductDetailsInfo = ({ data, products }) => {
+const ProductDetailsInfo = ({ data, products , totalReviews, averageRating }) => {
   const [active, setActive] = React.useState(1);
 
   return (
@@ -266,23 +282,31 @@ const ProductDetailsInfo = ({ data, products }) => {
         </>
       ) : null}
       {active === 2 ? (
-        <div className="w-full min-h-[40vh] flex  flex-col justify-center items-center">
-          {/*  py-3 overflow-y-scroll */}
-          {data && data.reviews.map((item, index)=>(
-            <div className="w-full flex my-2">
-              <img src={getImageUrl(item && item?.user.avatar)} alt="" className="w-[50px] h-[50px] rounded-full" />
-              <div className="pl-2 ">
-                <h1 className="font-[500]">{item.user.name}</h1>
-                <p>{item.comment}</p>
+        <div className="w-full min-h-[40vh] flex  flex-col  items-center py-3 overflow-y-scroll ">
+       
+          {data &&
+            data.reviews.map((item, index) => (
+              <div className="w-full flex my-2">
+                <img
+                  src={getImageUrl(item && item?.user.avatar)}
+                  alt=""
+                  className="w-[50px] h-[50px] rounded-full"
+                />
+                <div className="pl-2 ">
+                  <div className="w-full flex items-center">
+                    {" "}
+                    <h1 className="font-[500] mr-3">{item.user.name}</h1>
+                    <Ratings rating={item.rating} />
+                  </div>
+                  <p>{item.comment}</p>
+                </div>
               </div>
-            </div>
-          ))}
-         <div className="w-full flex justify-center">
-           {data && data.reviews.length === 0 && (
-            <h5>No reviews have for this Product!</h5>
-          )}
-         </div>
-          
+            ))}
+          <div className="w-full flex justify-center">
+            {data && data.reviews.length === 0 && (
+              <h5>No reviews have for this Product!</h5>
+            )}
+          </div>
         </div>
       ) : null}
       {active === 3 && (
@@ -297,7 +321,7 @@ const ProductDetailsInfo = ({ data, products }) => {
                 />
                 <div className="pl-3">
                   <h3 className={`${styles.shop_name}`}>{data.shop.name}</h3>
-                  <h5 className="pb-2 text-[15px]">(4/5) Ratings</h5>
+                  <h5 className="pb-2 text-[15px]">({averageRating}/5) Ratings</h5>
                 </div>
               </div>
             </Link>
@@ -319,7 +343,7 @@ const ProductDetailsInfo = ({ data, products }) => {
                 </span>
               </h5>
               <h5 className="font-[600] pt-3">
-                Total Reviews: <span className="font-[500]">234</span>
+                Total Reviews: <span className="font-[500]">{totalReviews}</span>
               </h5>
               <Link to="/">
                 <div
