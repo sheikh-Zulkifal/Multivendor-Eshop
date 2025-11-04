@@ -163,21 +163,6 @@ router.put(
         return next(new ErrorHandler("Order not found with this id", 400));
       }
 
-      async function updateOrder(id, qty) {
-        const product = await Product.findById(id);
-
-        product.stock += qty;
-        product.sold_out -= qty;
-
-        await product.save({ validateBeforeSave: false });
-      }
-
-      if (req.body.status === "Refund Success") {
-        for (const o of order.cart) {
-          await updateOrder(o._id, o.qty);
-        }
-      }
-
       order.status = req.body.status;
 
       await order.save();
@@ -186,10 +171,26 @@ router.put(
         success: true,
         message: "Order Refund successfull!",
       });
+
+      if (req.body.status === "Refund Success") {
+        order.cart.forEach(async (o) => {
+          await updateOrder(o._id, o.qty);
+        });
+      }
+
+      async function updateOrder(id, qty) {
+        const product = await Product.findById(id);
+
+        product.stock += qty;
+        product.sold_out -= qty;
+
+        await product.save({ validateBeforeSave: false });
+      }
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
   })
 );
+
 
 module.exports = router;
