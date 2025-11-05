@@ -200,7 +200,6 @@ router.put(
   })
 );
 
-// update user avatr
 
 // Update user avatar
 router.put(

@@ -27,9 +27,35 @@ const handleImage = (e) => {
     setAvatar(file)
     const formData = new FormData();
     formData.append("image", e.target.files[0]);
+    axios.put(`${server}/shop/update-shop-avatar`, formData,{
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true,
+    }).then((res) => {
+      toast.success("Shop Avatar Updated Successfully!");
+      dispatch(loadSeller());
+    }).catch((error) => {
+      toast.error(error.response.data.message);
+    });
 }
-const updateHandler = (e) => {
+
+const updateHandler = async (e) => {
     e.preventDefault();
+    await axios.put(`${server}/shop/update-seller-info`, {
+      name,
+      description,
+      address,
+      phoneNumber,
+      zipCode,
+    }, {
+      withCredentials: true,
+    }).then((res) => {
+      toast.success("Shop Info Updated Successfully!");
+      dispatch(loadSeller());
+    }).catch((error) => {
+      toast.error(error.response.data.message);
+    });
 }
 
 

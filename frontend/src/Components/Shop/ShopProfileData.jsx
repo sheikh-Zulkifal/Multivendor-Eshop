@@ -1,6 +1,5 @@
 import React, { use, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { productData } from "../../static/data";
 import styles from "../../styles/styles";
 import ProductCard from "../Route/ProductCard/ProductCard";
 import { useState } from "react";
@@ -8,20 +7,26 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
 import { getAllEventsShop } from "../../redux/actions/event";
+import getImageUrl from "../../utils/getImageUrl";
+import Ratings from "../Products/Ratings";
 
 const ShopProfileData = ({ isOwner }) => {
   const { products } = useSelector((state) => state.products);
-
+  const { events } = useSelector((state) => state.events);
+  const {seller} = useSelector((state) => state.seller);
 
   const { id } = useParams();
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAllProductsShop(id));
+    dispatch(getAllEventsShop(seller._id)); 
     
   }, [dispatch, id]);
 
   const [active, setActive] = useState(1);
+
+  const allReviews = products && products.map((product)=>product.reviews).flat()
 
   return (
     <div className="w-full">
@@ -100,13 +105,13 @@ const ShopProfileData = ({ isOwner }) => {
         </div>
       )}
 
-      {/*  {active === 3 && (
+      {active === 3 && (
         <div className="w-full">
           {allReviews &&
             allReviews.map((item, index) => (
               <div className="w-full flex my-4">
                 <img
-                  src={`${item.user.avatar?.url}`}
+                  src={getImageUrl(item.user.avatar.url)}
                   className="w-[50px] h-[50px] rounded-full"
                   alt=""
                 />
@@ -116,7 +121,7 @@ const ShopProfileData = ({ isOwner }) => {
                     <Ratings rating={item.rating} />
                   </div>
                   <p className="font-[400] text-[#000000a7]">{item?.comment}</p>
-                  <p className="text-[#000000a7] text-[14px]">{"2days ago"}</p>
+                  <p className="text-[#000000a7] text-[14px]">{"  "}</p>
                 </div>
               </div>
             ))}
@@ -126,7 +131,7 @@ const ShopProfileData = ({ isOwner }) => {
             </h5>
           )}
         </div>
-      )} */}
+      )}
     </div>
   );
 };

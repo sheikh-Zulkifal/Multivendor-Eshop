@@ -37,7 +37,9 @@ import {
   ShopAllOrders,
   ShopOrderDetails,
   ShopAllRefunds,
-  ShopSettingsPage
+  ShopSettingsPage,
+  ShopWithdrawMoneyPage,
+  ShopInboxPage,
 } from "./routes/ShopRoutes.js";
 import SellerProtectedRoute from "./routes/SellerProtectedRoute.jsx";
 import { getAllProducts } from "./redux/actions/product.js";
@@ -217,6 +219,22 @@ function App() {
           element={
             <SellerProtectedRoute>
               <ShopAllCoupouns />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-withdraw-money"
+          element={
+            <SellerProtectedRoute>
+              <ShopWithdrawMoneyPage />
+            </SellerProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard-messages"
+          element={
+            <SellerProtectedRoute>
+              <ShopInboxPage />
             </SellerProtectedRoute>
           }
         />
