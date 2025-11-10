@@ -1,20 +1,22 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { server } from "../../server";
+import Header from "../Components/layout/Header";
 import { useSelector } from "react-redux";
-import { data, useNavigate } from "react-router-dom";
-import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
-import { TfiGallery } from "react-icons/tfi";
-import styles from "../../styles/styles";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
-import getImageUrl from "../../utils/getImageUrl";
+import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
+import { TfiGallery } from "react-icons/tfi";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import getImageUrl from "../utils/getImageUrl";
+import { server } from "../server";
 
 const ENDPOINT = "http://localhost:7000";
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
-const DashboardMessages = () => {
+const UserInbox = () => {
+  const { user } = useSelector((state) => state.user);
   const { seller } = useSelector((state) => state.seller);
+
   const [conversations, setConversations] = useState([]);
   const [open, setOpen] = useState(false);
   const [arrivalMessage, setArrivalMessage] = useState(null);
@@ -25,56 +27,56 @@ const DashboardMessages = () => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [activeStatus, setActiveStatus] = useState(false);
   const [images, setImages] = useState();
+  
 
   useEffect(() => {
     socketId.on("getMessage", (data) => {
       setArrivalMessage({
-        senderId: data.senderId,
+        sender: data.sender || data.senderId,
         text: data.text,
         createdAt: Date.now(),
       });
     });
   }, []);
-
   useEffect(() => {
-    // arrivalMessage has senderId property
+    // arrivalMessage now has `sender` property
     if (!arrivalMessage) return;
-    const senderId = arrivalMessage.senderId;
-    if (
-      currentChat &&
-      currentChat.members &&
-      currentChat.members.includes(senderId)
-    ) {
+    const sender = arrivalMessage.sender;
+    if (currentChat && currentChat.members && currentChat.members.includes(sender)) {
       setMessages((prev) => [...(prev || []), arrivalMessage]);
     }
   }, [arrivalMessage, currentChat]);
 
- useEffect(() => {
-    axios
-      .get(`${server}/conversation/get-all-conversations-seller/${seller._id}`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setConversations(res.data.conversations);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-      
-   }, [seller, messages]);
+  useEffect(() => {
+    const getConversation = async () => {
+      try {
+        const response = await axios.get(
+          `${server}/conversation/get-all-conversations-user/${user?._id}`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        setConversations(response.data.conversations);
+      } catch (error) {
+        // console.log(error);
+      }
+    };
+    getConversation();
+  }, [user, messages]);
 
   useEffect(() => {
-    if (seller) {
-      const userId = seller?._id;
+    if (user) {
+      const userId = user?._id;
       socketId.emit("addUser", userId);
       socketId.on("getUsers", (data) => {
         setOnlineUsers(data);
       });
     }
-  }, [seller]);
+  }, [user]);
 
   const onlineCheck = (chat) => {
-    const chatMembers = chat.members.find((member) => member !== seller?._id);
+    const chatMembers = chat.members.find((member) => member !== user?._id);
     const online = onlineUsers.find((user) => user.userId === chatMembers);
 
     return online ? true : false;
@@ -100,19 +102,19 @@ const DashboardMessages = () => {
   const sendMessageHandler = async (e) => {
     e.preventDefault();
     const message = {
-      senderId: seller._id,
+      senderId: user._id,
       text: newMessage,
       conversationId: currentChat._id,
     };
     if (!currentChat) return;
     // members may be array of ids; pick the other member as receiver
     const recieverId = currentChat.members.find(
-      (member) => member !== seller._id
+      (member) => member !== user?._id
     );
 
     // emit via socket with correct sender id
     socketId.emit("sendMessage", {
-      senderId: seller._id,
+      senderId: user?._id,
       recieverId,
       text: newMessage,
     });
@@ -137,12 +139,12 @@ const DashboardMessages = () => {
   const updateLastMessage = async () => {
     socketId.emit("updateLastMessage", {
       lastMessage: newMessage,
-      lastMessageId: seller._id,
+      lastMessageId: user._id,
     });
     await axios
       .put(`${server}/conversation/update-last-message/${currentChat._id}`, {
         lastMessage: newMessage,
-        lastMessageId: seller._id,
+        lastMessageId: user._id,
       })
       .then((res) => {
         console.log(res.data.conversation);
@@ -154,13 +156,14 @@ const DashboardMessages = () => {
   };
 
   return (
-    <div className="w-[90%] bg-white m-5 h-[85vh] overflow-y-scroll rounded">
+    <div className="w-full">
       {!open && (
         <>
-          <h1 className="text-center text-[30px] py-3 font-Poppins ">
-            {" "}
-            All Messages{" "}
+          <Header />
+          <h1 className="text-center text-[30px] py-3 font-Poppins">
+            All Messages
           </h1>
+          {/* All messages list */}
           {conversations &&
             conversations.map((item, index) => (
               <MessageList
@@ -169,7 +172,7 @@ const DashboardMessages = () => {
                 index={index}
                 setOpen={setOpen}
                 setCurrentChat={setCurrentChat}
-                me={seller._id}
+                me={user?._id}
                 setUserData={setUserData}
                 userData={userData}
                 online={onlineCheck(item)}
@@ -180,13 +183,13 @@ const DashboardMessages = () => {
       )}
 
       {open && (
-        <SellerInbox
+        <UserChat
           setOpen={setOpen}
           newMessage={newMessage}
           setNewMessage={setNewMessage}
           sendMessageHandler={sendMessageHandler}
           messages={messages}
-          sellerId={seller._id}
+          meId={user._id}
           userData={userData}
           activeStatus={activeStatus}
         />
@@ -207,25 +210,31 @@ const MessageList = ({
   setActiveStatus,
 }) => {
   const [user, setUser] = useState([]);
+
   const navigate = useNavigate();
   const handleClick = (id) => {
     navigate(`?${id}`);
     setOpen(true);
   };
-  const [active, setActive] = useState(1);
+  const [active, setActive] = useState(0);
 
   useEffect(() => {
     setActiveStatus(online ? true : false);
-    const userId = data.members.find((user) => user != me);
+    const userId = data.members.find((user) => user !== me);
 
     const getUser = async () => {
       try {
-        const res = await axios.get(`${server}/user/user-info/${userId}`);
-        setUser(res.data.user);
+        const res = await axios.get(`${server}/shop/get-shop-info/${userId}`);
+        // backend returns { success: true, shop }
+        setUser(res.data.shop);
+        // also inform parent about selected user/shop data
+        setUserData(res.data.shop);
+  
       } catch (error) {
         console.log(error);
       }
     };
+
     getUser();
   }, [me, data]);
   return (
@@ -256,12 +265,12 @@ const MessageList = ({
       </div>
 
       <div className="pl-3">
-        <h1 className="text-[18px]">{user?.name}</h1>
+        <h1 className="text-[18px]">{userData?.name}</h1>
         <p className="text-[16px] text-[#000c] ">
           {" "}
-          {data.lastMessageId !== user?._id
+          {data.lastMessageId !== userData?._id
             ? "You: "
-            : user?.name.split("")[0] + ":"}{" "}
+            : userData.name.split("")[0] + ":"}{" "}
           {data.lastMessage}
         </p>
       </div>
@@ -269,7 +278,7 @@ const MessageList = ({
   );
 };
 
-const SellerInbox = ({
+const UserChat = ({
   setOpen,
   newMessage,
   setNewMessage,
@@ -278,6 +287,7 @@ const SellerInbox = ({
   sellerId,
   userData = { userData },
   activeStatus,
+
 }) => {
   return (
     <div className="w-full min-h-full flex flex-col justify-between">
@@ -367,4 +377,5 @@ const SellerInbox = ({
     </div>
   );
 };
-export default DashboardMessages;
+
+export default UserInbox;

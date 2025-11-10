@@ -31,15 +31,14 @@ router.post("/create-shop", upload.single("avatar"), async (req, res, next) => {
       return next(new ErrorHandler("Seller already exists", 400));
     }
     const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${filename}`;
-    
 
     const seller = {
       name: req.body.name,
       email: email,
       password: req.body.password,
       avatar: {
-      url: fileUrl,
-    },
+        url: fileUrl,
+      },
       address: req.body.address,
       phoneNumber: req.body.phoneNumber,
       zipCode: req.body.zipCode,
@@ -142,7 +141,7 @@ router.get(
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
-        // console.log(req.user);
+      // console.log(req.user);
       const seller = await Shop.findById(req.seller._id);
       if (!seller) {
         return next(new ErrorHandler("Seller not exists!", 400));
@@ -158,38 +157,41 @@ router.get(
 );
 // logout form shop
 
+router.get(
+  "/logout",
+  catchAsyncErrors(async (req, res) => {
+    try {
+      res.cookie("seller_token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+      });
 
-router.get("/logout", catchAsyncErrors(async (req, res)=>{
-  try {
-    res.cookie("seller_token", null,{
-      expires: new Date(Date.now()),
-      httpOnly: true,
-    })
-
-    res.status(201).json({
-      success: true,
-      message: "Logged out successfully",
-    })
-    
-  } catch (error) {
-    return next(new ErrorHandler(error.message, 500));
-  }
-}))
+      res.status(201).json({
+        success: true,
+        message: "Logged out successfully",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
 // get shop Info
 
-router.get("/get-shop-info/:id", catchAsyncErrors(async (req, res, next) => {
-  try {
-    const shop = await Shop.findById(req.params.id);
-    res.status(201).json({
-      success: true,
-      shop,
-    });
-
-  } catch (error) {
-    return next(new ErrorHandler(error.message, 500));
-  }
-}));
+router.get(
+  "/get-shop-info/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const shop = await Shop.findById(req.params.id);
+      res.status(201).json({
+        success: true,
+        shop,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
 // Update shop avatar
 router.put(
@@ -233,7 +235,6 @@ router.put(
   })
 );
 
-
 // update seller info
 router.put(
   "/update-seller-info",
@@ -256,6 +257,22 @@ router.put(
 
       await shop.save();
 
+      res.status(201).json({
+        success: true,
+        shop,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// get shop info
+router.get(
+  "/get-shop-info/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const shop = await Shop.findById(req.params.id);
       res.status(201).json({
         success: true,
         shop,

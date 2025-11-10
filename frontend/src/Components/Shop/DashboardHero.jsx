@@ -27,7 +27,7 @@ const DashboardHero = () => {
     setDeliveredOrders(orderData);
   }, [dispatch]);
 
-  const totalEarningsWithoutTax = deliveredOrders && deliveredOrders.reduce((acc, item) => acc + item.totalPrice, 0);
+  const totalEarningsWithoutTax = deliveredOrders && deliveredOrders.reduce((acc, item) => acc + item.totalPrice, 0) ;
 
   const serviceCharge = totalEarningsWithoutTax * 0.1
 

@@ -36,7 +36,7 @@ const event = require("./controller/eventController");
 const couponCode = require("./controller/coupounCodeController");
 const payment = require("./controller/paymentController");
 const order = require("./controller/orderController");
-const conversation = require("./controller/conservationController");
+const conversation = require("./controller/conversationController");
 const message = require("./controller/messagesController");
 
 
@@ -53,3 +53,4 @@ app.use("/api/v2/message", message);
 // for errhandling
 app.use(ErrorHandler);
 module.exports = app;
+conservationController
